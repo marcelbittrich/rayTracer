@@ -5,7 +5,7 @@
 
 using std::sqrt;
 
-class vec3 
+struct vec3 
 {
 public:
     double e[3];
