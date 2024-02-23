@@ -3,21 +3,12 @@
 #include "tools/vec3.h"
 
 
-Tracer::Tracer(const Camera& camera, const WindowInfo& windowInfo, SDL_Renderer* renderer)
-	: m_renderer(renderer)
+Tracer::Tracer(const Camera& camera, const WindowInfo& windowInfo)
 {
 	m_camera = camera;
 
-	// Image
-	double aspectRatio = windowInfo.aspectRatio;
 	m_imageWidth = windowInfo.width;
-
-	m_imageHeight = (int)(m_imageWidth / aspectRatio);
-	m_imageHeight = (m_imageHeight < 1) ? 1 : m_imageHeight;
-
-
-	// TODO: work with imageBuffer
-	m_imageBuffer = std::make_unique<color[]>(m_imageHeight * m_imageWidth);
+	m_imageHeight = windowInfo.heigth;
 }
 
 Tracer::~Tracer()
@@ -25,7 +16,7 @@ Tracer::~Tracer()
 }
 
 
-void Tracer::Update()
+void Tracer::Update(color imageBuffer[])
 {
 	// Camera
 	double focalLenght = 1.0;
@@ -54,49 +45,9 @@ void Tracer::Update()
 
 			color pixelColor = Tracing::RayColor(ray);
 
-			m_imageBuffer.get()[j * m_imageWidth + i] = pixelColor;
+			imageBuffer[j * m_imageWidth + i] = pixelColor;
 		}
 	}
-}
-
-void Tracer::Render()
-{
-	SDL_Surface* surface = SDL_CreateRGBSurface(0, m_imageWidth, m_imageHeight, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
-
-	SDL_memset(surface->pixels, 0, surface->h * surface->pitch);
-
-	//std::cout << "P3\n" << m_imageWidth << ' ' << m_imageHeight << "\n255\n" << std::endl;
-
-	for (int j = 0; j < m_imageHeight; j++)
-	{
-		for (int i = 0; i < m_imageWidth; i++)
-		{
-			//write_color(std::cout, m_imageBuffer.get()[j * m_imageWidth + i]);
-
-			uint8_t r = (uint8_t)(255.999 * m_imageBuffer.get()[j * m_imageWidth + i].x());
-			uint8_t g = (uint8_t)(255.999 * m_imageBuffer.get()[j * m_imageWidth + i].y());
-			uint8_t b = (uint8_t)(255.999 * m_imageBuffer.get()[j * m_imageWidth + i].z());
-			uint8_t a = (uint8_t)255;
-
-			Uint32 color = SDL_MapRGBA(surface->format, r, g, b, a);
-			SetPixel(surface, i, j, color);
-		}
-	}
-
-	// Set sampling to nearest pixel
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-	SDL_FreeSurface(surface);
-	SDL_Rect imageRect = { 0, 0, m_imageWidth, m_imageHeight };
-	SDL_RenderCopy(m_renderer, texture, &imageRect, &imageRect);
-
-	SDL_DestroyTexture(texture);
-}
-
-void Tracer::SetPixel(SDL_Surface* surface, int x, int y, Uint32 pixel)
-{
-	Uint32* pixels = (Uint32*)surface->pixels;
-	int position = (y * surface->w) + x;
-	pixels[position] = pixel;
 }
 
 namespace Tracing
