@@ -8,7 +8,7 @@ class Sphere : public Hittable
 public:
 	Sphere(point3 center, double radius) : m_center(center), m_radius(radius) {}
 
-	bool Hit(const Ray& ray, double rayTmin, double rayTmax, HitRecord& rec) const override
+	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
 	{
 		vec3 oc = ray.origin() - m_center;
 		double a = ray.direction().length_squared();
@@ -22,14 +22,14 @@ public:
 		}
 
 		double sqrtd = sqrt(discriminant);
-
 		double root = (-half_b - sqrtd) / a;
 		
-		// If root is out of bounds try with positive sqrtd
-		if (root <= rayTmin || rayTmax <= root)
+		// If root is out of interval try with positive sqrtd.
+		if (!rayT.Surrounds(root))
 		{
 			root = (-half_b + sqrtd) / a;
-			if (root <= rayTmin || rayTmax <= root)
+			// If this is also out of interval return.
+			if (!rayT.Surrounds(root))
 			{
 				return false;
 			}
@@ -37,7 +37,10 @@ public:
 
 		rec.t = root;
 		rec.p = ray.at(rec.t);
-		rec.normal = (rec.p - m_center) / m_radius;
+		vec3 outwardNormal = (rec.p - m_center) / m_radius;
+		rec.SetFaceNormal(ray, outwardNormal);
+
+		return true;
 	}
 
 private:

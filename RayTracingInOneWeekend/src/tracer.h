@@ -2,8 +2,13 @@
 
 #include <vector>
 
+#include "tools/rtweekend.h"
 #include "tools/color.h"
-#include "tools/ray.h"
+
+#include "objects/hittable.h"
+#include "objects/hittablelist.h"
+#include "objects/sphere.h"
+
 #include "camera.h" 
 
 #include "SDL_render.h"
@@ -14,7 +19,6 @@ struct WindowInfo
 	int width;
 	int heigth;
 };
-
 
 class Tracer
 {
@@ -32,6 +36,5 @@ private:
 
 namespace Tracing
 {
-	color RayColor(const Ray& ray);
-	double HitSphere(const point3& center, double radius, const Ray& ray);
+	color RayColor(const Ray& ray, const Hittable& world);
 }

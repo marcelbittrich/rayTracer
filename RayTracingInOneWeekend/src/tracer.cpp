@@ -18,8 +18,17 @@ Tracer::~Tracer()
 
 void Tracer::Update(color imageBuffer[])
 {
+	// World 
+
+	HittableList world;
+
+	world.add(make_shared<Sphere>(point3(2, 0, -5), 1.5));
+	world.add(make_shared<Sphere>(point3(0, 0, -1), 0.5));
+	world.add(make_shared<Sphere>(point3(-3, 0.5, -3), 1.0));
+	world.add(make_shared<Sphere>(point3(0, -100.5, -1), 100));
+
 	// Camera
-	double focalLenght = 1.0;
+	double focalLenght = 4.0;
 	const double viewportHeight = 2.0;
 	const double viewportWidth = viewportHeight * ((double)(m_imageWidth) / m_imageHeight);
 	point3 cameraCenter = m_camera.GetPosition();
@@ -43,7 +52,7 @@ void Tracer::Update(color imageBuffer[])
 
 			Ray ray(cameraCenter, rayDirection);
 
-			color pixelColor = Tracing::RayColor(ray);
+			color pixelColor = Tracing::RayColor(ray, world);
 
 			imageBuffer[j * m_imageWidth + i] = pixelColor;
 		}
@@ -52,44 +61,21 @@ void Tracer::Update(color imageBuffer[])
 
 namespace Tracing
 {
-	color RayColor(const Ray& ray)
+	color RayColor(const Ray& ray, const Hittable& world)
 	{
-		point3 spherecenter = point3(0.0, 0.0, -1.0);
-		double t = HitSphere(spherecenter, 0.5, ray);
-
-		if (t > 0.0)
+		HitRecord rec;
+		if (world.Hit(ray, Interval(0, infinity), rec))
 		{
-			vec3 n = unit_vector(ray.at(t) - spherecenter);
-			return 0.5 * color(n.x() + 1, n.y() + 1, n.z() + 1);
+			return 0.5 * (rec.normal + color(1, 1, 1));
 		}
 
+		// Color background with gradient if not hit.
 		// viewport height range 0..1
 		vec3 unitdirection = unit_vector(ray.direction());
 		double a = 0.5 * (unitdirection.y() + 1.0);
-
 		color startcolor = { 1.0, 1.0, 1.0 };
 		color endcolor = { 0.5, 0.7, 1.0 };
 		color lerpedcolor = startcolor * (1 - a) + endcolor * a;
-
 		return lerpedcolor;
-	}
-
-	double HitSphere(const point3& center, double radius, const Ray& ray)
-	{
-		// solve quadratic equation for line-sphere-intersection.
-		vec3 oc = ray.origin() - center;
-		double a = ray.direction().length_squared();
-		double half_b = dot(oc, ray.direction());
-		double c = oc.length_squared() - radius * radius;
-		double discriminant = half_b * half_b - a * c;
-
-		if (discriminant < 0)
-		{
-			return -1.0;
-		}
-		else
-		{
-			return (-half_b - sqrt(discriminant)) / a;
-		}
 	}
 }
