@@ -4,7 +4,6 @@
 
 #include <iostream>
 
-
 using color = vec3;
 
 inline void write_color(std::ostream& out, color pixel_color) {

@@ -143,12 +143,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\sdlwindowrenderer.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\sdlwindowrenderer.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\application.h" />
     <ClInclude Include="src\objects\hittable.h" />
@@ -158,6 +160,7 @@
     <ClInclude Include="src\tools\rtweekend.h" />
     <ClInclude Include="src\tools\color.h" />
     <ClInclude Include="src\tools\ray.h" />
+    <ClInclude Include="src\tools\windowinfo.h" />
     <ClInclude Include="src\tracer.h" />
     <ClInclude Include="src\tools\vec3.h" />
   </ItemGroup>

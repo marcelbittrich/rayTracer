@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../tools/ray.h"
+#include "../tools/interval.h"
 
 struct HitRecord
 {

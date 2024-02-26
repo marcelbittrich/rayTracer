@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cstdlib>
 #include <memory>
 
 // Usings
@@ -21,8 +22,28 @@ inline double degreesToRadians(double degrees)
 	return degrees * pi / 180.0;
 }
 
-// Common Headers
+inline uint32_t PCGHash(uint32_t input)
+{
+	uint32_t state = input * 747796405u + 2891336453u;
+	uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+	return (word >> 22u) ^ word;
+}
 
-#include "ray.h"
-#include "vec3.h"
-#include "interval.h"
+inline double fastRandomDouble(uint32_t& seed)
+{
+	seed = PCGHash(seed);
+	return (double)seed / UINT32_MAX;
+}
+
+inline double randomDouble()
+{
+	// Returns a random real in [0,1).
+	return (double)rand() / RAND_MAX;
+}
+
+
+inline double randomDouble(double min, double max)
+{
+	// Returns a random real in [min,max).
+	return min + (max - min) * randomDouble();
+}
