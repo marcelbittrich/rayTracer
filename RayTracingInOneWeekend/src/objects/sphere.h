@@ -6,7 +6,8 @@
 class Sphere : public Hittable
 {
 public:
-	Sphere(point3 center, double radius) : m_center(center), m_radius(radius) {}
+	Sphere(point3 center, double radius, shared_ptr<Material> material) 
+		: m_center(center), m_radius(radius), m_material(material){}
 
 	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
 	{
@@ -39,6 +40,7 @@ public:
 		rec.p = ray.at(rec.t);
 		vec3 outwardNormal = (rec.p - m_center) / m_radius;
 		rec.SetFaceNormal(ray, outwardNormal);
+		rec.material = m_material;
 
 		return true;
 	}
@@ -46,4 +48,5 @@ public:
 private:
 	point3 m_center;
 	double m_radius;
+	shared_ptr<Material> m_material;
 };

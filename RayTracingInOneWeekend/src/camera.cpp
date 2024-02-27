@@ -1,5 +1,7 @@
 #include "camera.h"
 
+#include "objects/material.h"
+
 Camera::Camera(const WindowInfo& windowInfo)
 	: m_position(vec3(0.0, 0.0, 4.0))
 {
@@ -80,9 +82,15 @@ color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world, uint32
 	HitRecord rec;
 	if (world.Hit(ray, Interval(0.001, infinity), rec))
 	{
-		vec3 direction = fastRandomOnHemisphere(rec.normal, seed);
-		//vec3 direction = randomOnHemisphere(rec.normal);
-		return 0.5 * RayColor(Ray(rec.p, direction), bounce - 1, world, seed);
+		Ray scatterd;
+		color attenuation;
+
+		if (rec.material->Scatter(ray, rec, attenuation, scatterd, seed))
+		{
+			return attenuation * RayColor(scatterd, bounce - 1, world, seed);
+		}
+
+		return color(0, 0, 0);
 	}
 
 	// Color background with gradient if not hit.

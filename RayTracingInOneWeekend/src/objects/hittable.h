@@ -3,10 +3,13 @@
 #include "../tools/ray.h"
 #include "../tools/interval.h"
 
+class Material;
+
 struct HitRecord
 {
 	point3 p;
 	vec3 normal;
+	shared_ptr<Material> material;
 	double t;
 	bool frontFace;
 

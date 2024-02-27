@@ -5,6 +5,8 @@
 #include "SDL.h"
 
 #include "objects/sphere.h"
+#include "objects/material.h"
+#include "tools/color.h"
 
 
 Application::Application()
@@ -30,10 +32,16 @@ Application::Application()
 
 void Application::SetWorld()
 {
-	m_world.add(make_shared<Sphere>(point3(2, 0, -5), 1.5));
-	m_world.add(make_shared<Sphere>(point3(0, 0, -1), 0.5));
-	m_world.add(make_shared<Sphere>(point3(-3, 0.5, -3), 1.0));
-	m_world.add(make_shared<Sphere>(point3(0, -100.5, -1), 100));
+	auto materialGround = make_shared<Lambertian>(color(0.8, 0.8, 0.0));
+	auto materialCenter = make_shared<Lambertian>(color(0.7, 0.3, 0.3));
+	auto materialLeft = make_shared<Metal>(color(0.8, 0.8, 0.8));
+	auto materialRight = make_shared<Metal>(color(0.8, 0.6, 0.2));
+
+
+	m_world.add(make_shared<Sphere>(point3(2, 0, -5), 1.5, materialRight));
+	m_world.add(make_shared<Sphere>(point3(0, 0, -1), 0.5, materialCenter));
+	m_world.add(make_shared<Sphere>(point3(-3, 0.5, -3), 1.0, materialLeft));
+	m_world.add(make_shared<Sphere>(point3(0, -100.5, -1), 100, materialGround));
 }
 
 Application::~Application()

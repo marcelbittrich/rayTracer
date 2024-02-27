@@ -19,9 +19,13 @@ void SDLWindowRenderer::Render(color imageBuffer[], const WindowInfo& windowInfo
 		{
 			//write_color(std::cout, m_imageBuffer.get()[j * m_imageWidth + i]);
 
-			uint8_t r = (uint8_t)(255.999 * imageBuffer[j * windowWidth + i].x());
-			uint8_t g = (uint8_t)(255.999 * imageBuffer[j * windowWidth + i].y());
-			uint8_t b = (uint8_t)(255.999 * imageBuffer[j * windowWidth + i].z());
+			double rd = lineraToGamma(imageBuffer[j * windowWidth + i].x());
+			double gd = lineraToGamma(imageBuffer[j * windowWidth + i].y());
+			double bd = lineraToGamma(imageBuffer[j * windowWidth + i].z());
+
+			uint8_t r = (uint8_t)(255.999 * rd);
+			uint8_t g = (uint8_t)(255.999 * gd);
+			uint8_t b = (uint8_t)(255.999 * bd);
 			uint8_t a = (uint8_t)255;
 
 			Uint32 localColor = SDL_MapRGBA(surface->format, r, g, b, a);

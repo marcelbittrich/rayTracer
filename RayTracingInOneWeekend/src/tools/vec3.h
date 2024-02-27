@@ -47,6 +47,12 @@ public:
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
 
+    bool nearZero() 
+    {
+        double s = 1e-8;
+        return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+    }
+
     static vec3 random()
     {
         return vec3(randomDouble(), randomDouble(), randomDouble());
@@ -174,4 +180,9 @@ inline vec3 fastRandomOnHemisphere(const vec3& normal, uint32_t& seed)
     {
         return -onUnitSphere;
     }
+}
+
+inline vec3 reflect(const vec3& vector, const vec3& normal)
+{
+    return vector - 2 * dot(vector, normal) * normal;
 }

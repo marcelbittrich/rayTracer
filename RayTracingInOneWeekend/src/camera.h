@@ -30,7 +30,7 @@ private:
 	point3 m_position;
 	vec3 m_viewDirection;
 
-	int m_maxBounce = 2;
+	int m_maxBounce = 10;
 	int m_sampleCount = 0;
 	
 	uint32_t m_seed;
