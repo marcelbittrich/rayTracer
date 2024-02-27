@@ -14,7 +14,6 @@ public:
 	Camera(const WindowInfo& windowInfo);
 
 	void HandleInput() {};
-
 	void Update(const HittableList& world, color imageBuffer[], const WindowInfo& windowInfo);
 
 	point3 GetPosition() const { return m_position; }
@@ -31,10 +30,12 @@ private:
 	point3 m_position;
 	vec3 m_viewDirection;
 
+	int m_maxBounce = 2;
 	int m_sampleCount = 0;
+	
+	uint32_t m_seed;
 	
 	Ray GetRay(int i, int j);
 	vec3 PixelSampleSquare();
-	color RayColor(const Ray& ray, const Hittable& world);
+	color RayColor(const Ray& ray, int maxBounce, const Hittable& world, uint32_t seed);
 };
-

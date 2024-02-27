@@ -35,6 +35,11 @@ inline double fastRandomDouble(uint32_t& seed)
 	return (double)seed / UINT32_MAX;
 }
 
+inline double fastRandomDouble(double min, double max, uint32_t& seed)
+{
+	return min + (max - min) * fastRandomDouble(seed);
+}
+
 inline double randomDouble()
 {
 	// Returns a random real in [0,1).

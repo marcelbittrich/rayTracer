@@ -26,9 +26,12 @@ void Camera::Update(const HittableList& world, color imageBuffer[], const Window
 	{
 		for (int i = 0; i < windowInfo.width; i++)
 		{
+			m_seed = j * windowInfo.width + i;
+			m_seed *= m_sampleCount;
+
 			color pixelColor = { 0,0,0 };
 			Ray ray = GetRay(i, j);
-			color newColor= RayColor(ray, world);
+			color newColor= RayColor(ray, m_maxBounce, world, m_seed);
 
 			if (m_sampleCount > 1)
 			{
@@ -66,20 +69,33 @@ vec3 Camera::PixelSampleSquare()
 	return deltaX * m_pixelDeltaU + deltaY * m_pixelDeltaV;
 }
 
-color Camera::RayColor(const Ray& ray, const Hittable& world)
+color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world, uint32_t seed)
 {
-	HitRecord rec;
-	if (world.Hit(ray, Interval(0, infinity), rec))
+	if (bounce <= 0)
 	{
-		return 0.5 * (rec.normal + color(1, 1, 1));
+		return color(0, 0, 0);
+	}
+
+	seed += bounce;
+	HitRecord rec;
+	if (world.Hit(ray, Interval(0.001, infinity), rec))
+	{
+		vec3 direction = fastRandomOnHemisphere(rec.normal, seed);
+		//vec3 direction = randomOnHemisphere(rec.normal);
+		return 0.5 * RayColor(Ray(rec.p, direction), bounce - 1, world, seed);
 	}
 
 	// Color background with gradient if not hit.
 	// viewport height range 0..1
-	vec3 unitdirection = unit_vector(ray.direction());
+	vec3 unitdirection = unitVector(ray.direction());
 	double a = 0.5 * (unitdirection.y() + 1.0);
 	color startcolor = { 1.0, 1.0, 1.0 };
 	color endcolor = { 0.5, 0.7, 1.0 };
 	color lerpedcolor = startcolor * (1 - a) + endcolor * a;
 	return lerpedcolor;
 }
+
+//// Cherno seed approach 
+//seed = x + y * imageWidth;
+//seed *= m_frameSample;
+//seed += bounceCount
