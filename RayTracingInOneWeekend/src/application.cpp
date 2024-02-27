@@ -63,24 +63,17 @@ void Application::Run()
 	// Performance time end
 	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> timeSpan = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
-	std::clog << "Took " << timeSpan.count() << "s to calculate" << std::endl;
+	m_deltaTime = timeSpan.count();
+	std::clog << "Took " << m_deltaTime << "s to calculate" << std::endl;
 }
 
 
 
 void Application::HandleEvents()
 {
-	SDL_Event event;
-	while (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_QUIT:
-			m_running = false;
-		}
-	}
+	m_input.HandleInput(m_running);
 
-	m_camera->HandleInput();
+	m_camera->HandleInput(m_input, m_deltaTime);
 }
 
 void Application::Update()

@@ -143,6 +143,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\objects\material.cpp" />
     <ClCompile Include="src\sdlwindowrenderer.cpp" />
     <ClCompile Include="src\camera.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="src\tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\input.h" />
     <ClInclude Include="src\objects\material.h" />
     <ClInclude Include="src\sdlwindowrenderer.h" />
     <ClInclude Include="src\camera.h" />

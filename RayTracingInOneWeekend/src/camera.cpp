@@ -5,9 +5,17 @@
 Camera::Camera(const WindowInfo& windowInfo)
 	: m_position(vec3(0.0, 0.0, 4.0))
 {
-	m_focalLength = 4.0;
-	m_viewportHeight = 2.0;
-	m_viewportWidth = m_viewportHeight * ((double)(windowInfo.width) / windowInfo.height);
+	RecalculateViewport(windowInfo);
+}
+
+void Camera::RecalculateViewport(const WindowInfo& windowInfo)
+{
+	m_focalLength = 1.0;
+	double theta = degreesToRadians(hfov);
+	double h = tan(theta / 2);
+
+	m_viewportWidth = 2 * h * m_focalLength;
+	m_viewportHeight = m_viewportWidth * ((double)(windowInfo.height) / windowInfo.width);
 
 	vec3 viewportU = { m_viewportWidth, 0, 0 };
 	vec3 viewportV = { 0, -m_viewportHeight, 0 };
@@ -20,8 +28,49 @@ Camera::Camera(const WindowInfo& windowInfo)
 	m_firstPixelLocation = viewportUpperLeft + m_pixelDeltaU / 2 + m_pixelDeltaV / 2;
 }
 
+void Camera::HandleInput(const Input& input, double deltaTime)
+{
+	double speed = 1.0;
+	double speedUp = 2.0;
+	vec3 change = { 0,0,0 };
+
+	if (input.Up())
+	{
+		change += vec3(0, 0, -speed) * deltaTime;
+		m_HasChanged = true;
+	}
+	if (input.Down())
+	{
+		change += vec3(0, 0, speed) * deltaTime;
+		m_HasChanged = true;
+	}
+	if (input.Left())
+	{
+		change += vec3(-speed, 0, 0) * deltaTime;
+		m_HasChanged = true;
+	}
+	if (input.Right())
+	{
+		change += vec3(speed, 0, 0) * deltaTime;
+		m_HasChanged = true;
+	}
+	if (input.LeftShift())
+	{
+		change *= speedUp;
+	}
+
+	m_position += change;
+}
+
 void Camera::Update(const HittableList& world, color imageBuffer[], const WindowInfo& windowInfo)
 {
+	if (m_HasChanged)
+	{ 
+		RecalculateViewport(windowInfo);
+		m_sampleCount = 0;
+		m_HasChanged = false;
+	}
+
 	++m_sampleCount;
 
 	for (int j = 0; j < windowInfo.height; j++)
@@ -65,9 +114,8 @@ Ray Camera::GetRay(int i, int j)
 
 vec3 Camera::PixelSampleSquare()
 {
-	static uint32_t seed = 1;
-	double deltaX = -0.5 + fastRandomDouble(seed);
-	double deltaY = -0.5 + fastRandomDouble(seed);
+	double deltaX = -0.5 + fastRandomDouble(m_seed);
+	double deltaY = -0.5 + fastRandomDouble(m_seed);
 	return deltaX * m_pixelDeltaU + deltaY * m_pixelDeltaV;
 }
 
