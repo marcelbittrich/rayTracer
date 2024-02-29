@@ -2,7 +2,8 @@
 
 #include "memory"
 
-#include "input.h"
+#include "input/input.h"
+#include "input/mover.h"
 #include "tools/rtweekend.h"
 #include "objects/hittablelist.h"
 #include "tools/windowInfo.h"
@@ -17,7 +18,7 @@ public:
 	void Update(const HittableList& world, color imageBuffer[], const WindowInfo& windowInfo);
 
 	point3 GetPosition() const { return m_position; }
-	vec3 GetViewDirection() const{ return m_viewDirection; }
+	vec3 GetRotation() const{ return m_rotation; }
 
 
 private:
@@ -30,11 +31,21 @@ private:
 	double m_viewportHeight;
 	double m_viewportWidth;
 	point3 m_position;
-	vec3 m_viewDirection;
+	vec3 m_rotation = { 0,0,0 };
+	vec3 m_viewDirection = {0,0,-1};
 
 	int m_sampleCount = 0;
 	uint32_t m_seed = 0;
 	bool m_HasChanged = false;
+
+	double m_movementSpeed = 1.0;
+	double m_rotatingSpeed = 1.0;
+	double m_speedMultiplier = 2.0;
+	Mover m_mover = {
+		m_movementSpeed,
+		m_rotatingSpeed,
+		m_speedMultiplier
+	};
 	
 	void RecalculateViewport(const WindowInfo& windowInfo);
 	Ray GetRay(int i, int j);

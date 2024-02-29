@@ -143,7 +143,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\input.cpp" />
+    <ClCompile Include="src\input\mover.cpp" />
+    <ClCompile Include="src\input\input.cpp" />
     <ClCompile Include="src\objects\material.cpp" />
     <ClCompile Include="src\sdlwindowrenderer.cpp" />
     <ClCompile Include="src\camera.cpp" />
@@ -152,7 +153,8 @@
     <ClCompile Include="src\tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\input.h" />
+    <ClInclude Include="src\input\mover.h" />
+    <ClInclude Include="src\input\input.h" />
     <ClInclude Include="src\objects\material.h" />
     <ClInclude Include="src\sdlwindowrenderer.h" />
     <ClInclude Include="src\camera.h" />
@@ -161,6 +163,7 @@
     <ClInclude Include="src\objects\hittablelist.h" />
     <ClInclude Include="src\objects\sphere.h" />
     <ClInclude Include="src\tools\interval.h" />
+    <ClInclude Include="src\tools\matrix.h" />
     <ClInclude Include="src\tools\rtweekend.h" />
     <ClInclude Include="src\tools\color.h" />
     <ClInclude Include="src\tools\ray.h" />

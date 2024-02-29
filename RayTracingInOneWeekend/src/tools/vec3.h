@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include "rtweekend.h"
 
 using std::sqrt;
 
@@ -20,6 +21,54 @@ public:
     vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
     double operator[](int i) const { return e[i]; }
     double& operator[](int i) { return e[i]; }
+
+    enum class Axis 
+    {
+        X,
+        Y,
+        Z
+    };
+
+    vec3& Rotate(Axis axisToRotateAround, double degrees)
+    {
+        double angle = degreesToRadians(degrees);
+        double x = 0, y = 0, z = 0;
+
+        switch (axisToRotateAround)
+        {
+        case vec3::Axis::X:
+            x = e[0];
+            y = e[1] * cos(angle) - e[2] * sin(angle);
+            z = e[1] * sin(angle) + e[2] * cos(angle);
+            break;
+        case vec3::Axis::Y:
+            x = e[0] * cos(angle) + e[2] * sin(angle);
+            y = e[1];
+            z = -e[0] * sin(angle) + e[2] * cos(angle);
+            break;
+        case vec3::Axis::Z:
+            x = e[0] * cos(angle) - e[1] * sin(angle);
+            y = e[0] * sin(angle) + e[1] * cos(angle);
+            z = e[2];
+            break;
+        default:
+            break;
+        }
+        e[0] = x;
+        e[1] = y;
+        e[2] = z;
+        return *this;
+    }
+
+    vec3& Rotate(const vec3& eulerAngles)
+    {
+        // Sequence is important!
+        this->Rotate(Axis::X, eulerAngles.x());
+        this->Rotate(Axis::Y, eulerAngles.y());
+        this->Rotate(Axis::Z, eulerAngles.z());
+
+        return *this;
+    }
 
     vec3& operator+=(const vec3& v) {
         e[0] += v.e[0];

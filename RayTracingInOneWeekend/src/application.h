@@ -5,7 +5,7 @@
 #include "tools/windowInfo.h"
 #include "camera.h"
 #include "sdlwindowrenderer.h"
-#include "input.h"
+#include "input/input.h"
 
 class Application
 {
@@ -37,4 +37,3 @@ private:
 	void Update();
 	void Render();
 };
-

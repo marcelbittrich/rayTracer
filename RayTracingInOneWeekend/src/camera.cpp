@@ -23,43 +23,27 @@ void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 	m_pixelDeltaU = viewportU / windowInfo.width;
 	m_pixelDeltaV = viewportV / windowInfo.height;
 
+
+	vec3 startViewDirection = { 0, 0, -1 };
+	//currentViewDirection.Rotate(m_rotation);
+	point3 focusPoint = startViewDirection * m_focalLength;
+
 	// Calculate location of upper left pixel 
-	point3 viewportUpperLeft = m_position - vec3(0, 0, m_focalLength) - viewportU / 2 - viewportV / 2;
+	point3 viewportUpperLeft = focusPoint - viewportU / 2 - viewportV / 2;
 	m_firstPixelLocation = viewportUpperLeft + m_pixelDeltaU / 2 + m_pixelDeltaV / 2;
+
+	vec3 m_localFirstPixelLocation = m_firstPixelLocation;
+	m_localFirstPixelLocation.Rotate(m_rotation);
+
+	m_firstPixelLocation = m_position + m_localFirstPixelLocation;
+	m_pixelDeltaU = m_pixelDeltaU.Rotate(m_rotation);
+	m_pixelDeltaV = m_pixelDeltaV.Rotate(m_rotation);
+
 }
 
 void Camera::HandleInput(const Input& input, double deltaTime)
 {
-	double speed = 1.0;
-	double speedUp = 2.0;
-	vec3 change = { 0,0,0 };
-
-	if (input.Up())
-	{
-		change += vec3(0, 0, -speed) * deltaTime;
-		m_HasChanged = true;
-	}
-	if (input.Down())
-	{
-		change += vec3(0, 0, speed) * deltaTime;
-		m_HasChanged = true;
-	}
-	if (input.Left())
-	{
-		change += vec3(-speed, 0, 0) * deltaTime;
-		m_HasChanged = true;
-	}
-	if (input.Right())
-	{
-		change += vec3(speed, 0, 0) * deltaTime;
-		m_HasChanged = true;
-	}
-	if (input.LeftShift())
-	{
-		change *= speedUp;
-	}
-
-	m_position += change;
+	m_HasChanged = m_mover.UpdateTranform(m_position, m_rotation, input, deltaTime);
 }
 
 void Camera::Update(const HittableList& world, color imageBuffer[], const WindowInfo& windowInfo)
@@ -150,8 +134,3 @@ color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world, uint32
 	color lerpedcolor = startcolor * (1 - a) + endcolor * a;
 	return lerpedcolor;
 }
-
-//// Cherno seed approach 
-//seed = x + y * imageWidth;
-//seed *= m_frameSample;
-//seed += bounceCount

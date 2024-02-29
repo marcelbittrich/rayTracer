@@ -17,11 +17,11 @@ void Input::HandleInput(bool& isRunning)
 			{
 			case SDLK_UP:
 			case SDLK_w:
-				type.up = true;
+				type.forward = true;
 				break;
 			case SDLK_DOWN:
 			case SDLK_s:
-				type.down = true;
+				type.backward = true;
 				break;
 			case SDLK_RIGHT:
 			case SDLK_d:
@@ -30,6 +30,12 @@ void Input::HandleInput(bool& isRunning)
 			case SDLK_LEFT:
 			case SDLK_a:
 				type.left = true;
+				break;
+			case SDLK_q:
+				type.up = true;
+				break;
+			case SDLK_e:
+				type.down = true;
 				break;
 			case SDLK_LSHIFT:
 				type.leftShift = true;
@@ -53,11 +59,11 @@ void Input::HandleInput(bool& isRunning)
 			{
 			case SDLK_UP:
 			case SDLK_w:
-				type.up = false;
+				type.forward = false;
 				break;
 			case SDLK_DOWN:
 			case SDLK_s:
-				type.down = false;
+				type.backward = false;
 				break;
 			case SDLK_RIGHT:
 			case SDLK_d:
@@ -66,6 +72,12 @@ void Input::HandleInput(bool& isRunning)
 			case SDLK_LEFT:
 			case SDLK_a:
 				type.left = false;
+				break;
+			case SDLK_q:
+				type.up = false;
+				break;
+			case SDLK_e:
+				type.down = false;
 				break;
 			case SDLK_LSHIFT:
 				type.leftShift = false;
@@ -91,6 +103,9 @@ void Input::HandleInput(bool& isRunning)
 			case SDL_BUTTON_LEFT:
 				type.leftClick = true;
 				break;
+			case SDL_BUTTON_RIGHT:
+				type.rightClick = true;
+				break;
 			default:
 				break;
 			}
@@ -100,6 +115,9 @@ void Input::HandleInput(bool& isRunning)
 			{
 			case SDL_BUTTON_LEFT:
 				type.leftClick = false;
+				break;
+			case SDL_BUTTON_RIGHT:
+				type.rightClick = false;
 				break;
 			default:
 				break;
