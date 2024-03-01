@@ -1,6 +1,6 @@
-# rayTracingInOneWeekend
+# Ray Tracing In One Weekend
 
-![FirstRender](https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/0eb0b7b0-d5a6-48cb-8c9f-ddd7b384ab0d)
+![Focus2](https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/897c76f5-bea6-4c3f-9575-ec297425dffd)
 
 (under construction)
 
