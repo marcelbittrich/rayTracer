@@ -184,6 +184,17 @@ inline vec3 randomInUnitSphere() {
     }
 }
 
+inline vec3 fastRandomInUnitDisk(uint32_t& seed) {
+    while (true)
+    {
+        point3 p = vec3(fastRandomDouble(-1, 1, seed), fastRandomDouble(-1, 1, seed), 0);
+        if (p.length_squared() < 1)
+        {
+            return p;
+        }
+    }
+}
+
 inline vec3 fastRandomInUnitSphere(uint32_t& seed) {
     while (true)
     {
@@ -234,4 +245,13 @@ inline vec3 fastRandomOnHemisphere(const vec3& normal, uint32_t& seed)
 inline vec3 reflect(const vec3& vector, const vec3& normal)
 {
     return vector - 2 * dot(vector, normal) * normal;
+}
+
+inline vec3 refract(const vec3& vector, const vec3& normal, double etaiOverEtat)
+{
+    double cosTheta = fmin(dot(-vector, normal), 1.0);
+    vec3 rayOutPerp = etaiOverEtat * (vector + cosTheta * normal);
+    vec3 rayOutParallel = -sqrt(fabs(1.0 - rayOutPerp.length_squared())) * normal;
+
+    return rayOutPerp + rayOutParallel;
 }

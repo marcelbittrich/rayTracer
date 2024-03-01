@@ -21,9 +21,13 @@ public:
 	vec3 GetRotation() const{ return m_rotation; }
 
 private:
-	int    m_maxBounce = 10;
-	double hfov        = 60;
-	double m_focalLength;
+	const bool m_hasFocusBlur  = true;
+	int    m_maxBounce     = 10;
+	double hfov            = 60.0;
+	double m_focusDistance = 5.0;
+	double m_defocusAngle  = 3.0;
+	vec3   m_defocusDistanceU;
+	vec3   m_defocusDistanceV;
 	vec3   m_pixelDeltaU;
 	vec3   m_pixelDeltaV;
 	point3 m_firstPixelLocation;
@@ -49,5 +53,6 @@ private:
 	void RecalculateViewport(const WindowInfo& windowInfo);
 	Ray GetRay(int i, int j);
 	vec3 PixelSampleSquare();
+	vec3 DefocusDiskSample();
 	color RayColor(const Ray& ray, int maxBounce, const Hittable& world, uint32_t seed);
 };

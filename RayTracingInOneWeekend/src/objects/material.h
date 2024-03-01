@@ -28,10 +28,26 @@ private:
 class Metal : public Material
 {
 public:
-	Metal(const color& albedo) : m_albedo(albedo) {}
+	Metal(const color& albedo, double fuzz) 
+		: m_albedo(albedo), m_fuzz(fuzz < 1 ? fuzz : 1) {}
 
 	bool Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered, uint32_t& seed) const override;
 
 private:
 	color m_albedo;
+	double m_fuzz;
+};
+
+class Dielectric : public Material
+{
+public:
+	Dielectric(double refrectionIndex)
+		: m_refractionIndex(refrectionIndex){}
+
+	bool Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered, uint32_t& seed) const override;
+
+private:
+	double m_refractionIndex;
+
+	double reflectance(double cosine, double refractionIndex) const;
 };

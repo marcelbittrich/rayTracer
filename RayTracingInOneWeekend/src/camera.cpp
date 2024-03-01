@@ -11,11 +11,11 @@ Camera::Camera(const WindowInfo& windowInfo)
 void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 {
 	// Calculation of the vieport local to camera
-	m_focalLength = 1.0;
+	
 	double theta = degreesToRadians(hfov);
 	double h = tan(theta / 2);
 
-	m_viewportWidth = 2 * h * m_focalLength;
+	m_viewportWidth = 2 * h * m_focusDistance;
 	m_viewportHeight = m_viewportWidth * ((double)(windowInfo.height) / windowInfo.width);
 
 	vec3 viewportU = { m_viewportWidth, 0, 0 };
@@ -25,7 +25,7 @@ void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 	m_pixelDeltaV = viewportV / windowInfo.height;
 
 	vec3 startViewDirection = { 0, 0, -1 };
-	point3 focusPoint = startViewDirection * m_focalLength;
+	point3 focusPoint = startViewDirection * m_focusDistance;
 
 	// Calculate location of upper left pixel 
 	point3 viewportUpperLeft = focusPoint - viewportU / 2 - viewportV / 2;
@@ -38,6 +38,11 @@ void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 	m_firstPixelLocation = m_position + m_localFirstPixelLocation;
 	m_pixelDeltaU = m_pixelDeltaU.Rotate(m_rotation);
 	m_pixelDeltaV = m_pixelDeltaV.Rotate(m_rotation);
+
+	// Calculate camera defocus disk basis vectors;
+	double defocus_raidus = m_focusDistance * tan(degreesToRadians(m_defocusAngle / 2));
+	m_defocusDistanceU = unitVector(m_pixelDeltaU) * defocus_raidus;
+	m_defocusDistanceV = unitVector(m_pixelDeltaV) * defocus_raidus;
 }
 
 void Camera::HandleInput(const Input& input, double deltaTime)
@@ -89,7 +94,16 @@ Ray Camera::GetRay(int i, int j)
 	point3 pixelCenter = m_firstPixelLocation + m_pixelDeltaU * i + m_pixelDeltaV * j;
 	point3 pixelSample = pixelCenter + PixelSampleSquare();
 
-	point3 rayOrigin = m_position;
+	point3 rayOrigin;
+	if (m_hasFocusBlur)
+	{
+		rayOrigin = (m_defocusAngle <= 0) ? m_position : DefocusDiskSample();
+	}
+	else
+	{
+		rayOrigin = m_position;
+	}
+
 	vec3 rayDirection = pixelSample - rayOrigin;
 
 	return Ray(rayOrigin, rayDirection);
@@ -100,6 +114,12 @@ vec3 Camera::PixelSampleSquare()
 	double deltaX = -0.5 + fastRandomDouble(m_seed);
 	double deltaY = -0.5 + fastRandomDouble(m_seed);
 	return deltaX * m_pixelDeltaU + deltaY * m_pixelDeltaV;
+}
+
+vec3 Camera::DefocusDiskSample()
+{
+	vec3 p = fastRandomInUnitDisk(m_seed);
+	return m_position + p[0] * m_defocusDistanceU + p[1] * m_defocusDistanceV;
 }
 
 color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world, uint32_t seed)
