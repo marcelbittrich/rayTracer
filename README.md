@@ -4,4 +4,4 @@
 
 (under construction)
 
-My onw take on the book Ray Tracing in One Weekend. I made some key changes, most notably it runs in real time and you can move the camera freely.
+My own take on the book Ray Tracing in One Weekend. I made some key changes, most notably it runs in real time and you can move the camera freely.
