@@ -19,5 +19,5 @@ public:
 
 private:
 	point3 m_origin;
-	vec3 m_direction;
+	vec3   m_direction;
 };

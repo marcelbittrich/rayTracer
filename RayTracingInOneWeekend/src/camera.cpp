@@ -10,6 +10,7 @@ Camera::Camera(const WindowInfo& windowInfo)
 
 void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 {
+	// Calculation of the vieport local to camera
 	m_focalLength = 1.0;
 	double theta = degreesToRadians(hfov);
 	double h = tan(theta / 2);
@@ -23,36 +24,34 @@ void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 	m_pixelDeltaU = viewportU / windowInfo.width;
 	m_pixelDeltaV = viewportV / windowInfo.height;
 
-
 	vec3 startViewDirection = { 0, 0, -1 };
-	//currentViewDirection.Rotate(m_rotation);
 	point3 focusPoint = startViewDirection * m_focalLength;
 
 	// Calculate location of upper left pixel 
 	point3 viewportUpperLeft = focusPoint - viewportU / 2 - viewportV / 2;
 	m_firstPixelLocation = viewportUpperLeft + m_pixelDeltaU / 2 + m_pixelDeltaV / 2;
 
+	// Translate and Rotate into world space
 	vec3 m_localFirstPixelLocation = m_firstPixelLocation;
 	m_localFirstPixelLocation.Rotate(m_rotation);
 
 	m_firstPixelLocation = m_position + m_localFirstPixelLocation;
 	m_pixelDeltaU = m_pixelDeltaU.Rotate(m_rotation);
 	m_pixelDeltaV = m_pixelDeltaV.Rotate(m_rotation);
-
 }
 
 void Camera::HandleInput(const Input& input, double deltaTime)
 {
-	m_HasChanged = m_mover.UpdateTranform(m_position, m_rotation, input, deltaTime);
+	m_hasChanged = m_mover.UpdateTranform(m_position, m_rotation, input, deltaTime);
 }
 
 void Camera::Update(const HittableList& world, color imageBuffer[], const WindowInfo& windowInfo)
 {
-	if (m_HasChanged)
+	if (m_hasChanged)
 	{ 
 		RecalculateViewport(windowInfo);
 		m_sampleCount = 0;
-		m_HasChanged = false;
+		m_hasChanged = false;
 	}
 
 	++m_sampleCount;
@@ -66,7 +65,7 @@ void Camera::Update(const HittableList& world, color imageBuffer[], const Window
 
 			color pixelColor = { 0,0,0 };
 			Ray ray = GetRay(i, j);
-			color newColor= RayColor(ray, m_maxBounce, world, m_seed);
+			color newColor = RayColor(ray, m_maxBounce, world, m_seed);
 
 			if (m_sampleCount > 1)
 			{
@@ -111,6 +110,7 @@ color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world, uint32
 	}
 
 	seed += bounce;
+
 	HitRecord rec;
 	if (world.Hit(ray, Interval(0.001, infinity), rec))
 	{

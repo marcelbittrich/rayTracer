@@ -1,5 +1,4 @@
 #include "iostream"
-
 #include "src/application.h"
 
 int main()

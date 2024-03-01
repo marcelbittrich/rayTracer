@@ -32,11 +32,10 @@ Application::Application()
 
 void Application::SetWorld()
 {
-	auto materialGround = make_shared<Lambertian>(color(0.8, 0.8, 0.0));
+	auto materialGround = make_shared<Lambertian>(color(0.5, 0.5, 0.5));
 	auto materialCenter = make_shared<Lambertian>(color(0.7, 0.3, 0.3));
-	auto materialLeft = make_shared<Metal>(color(0.8, 0.8, 0.8));
-	auto materialRight = make_shared<Metal>(color(0.8, 0.6, 0.2));
-
+	auto materialLeft   = make_shared<Metal>(color(0.8, 0.8, 0.8));
+	auto materialRight  = make_shared<Metal>(color(0.82, 0.68, 0.22));
 
 	m_world.add(make_shared<Sphere>(point3(2, 0, -5), 1.5, materialRight));
 	m_world.add(make_shared<Sphere>(point3(0, 0, -1), 0.5, materialCenter));
@@ -72,7 +71,6 @@ void Application::Run()
 void Application::HandleEvents()
 {
 	m_input.HandleInput(m_running);
-
 	m_camera->HandleInput(m_input, m_deltaTime);
 }
 

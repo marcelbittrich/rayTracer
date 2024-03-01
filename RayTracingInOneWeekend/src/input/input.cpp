@@ -40,16 +40,6 @@ void Input::HandleInput(bool& isRunning)
 			case SDLK_LSHIFT:
 				type.leftShift = true;
 				break;
-			//case SDLK_SPACE:
-			//	m_controlBools.isShooting = true;
-			//	break;
-			//case SDLK_LCTRL:
-			//	m_controlBools.isUsingBomb = true;
-			//	break;
-			//case SDLK_p:
-			//case SDLK_ESCAPE:
-			//	m_controlBools.pausePressed = true;
-			//	break;
 			default:
 				break;
 			}
@@ -82,16 +72,6 @@ void Input::HandleInput(bool& isRunning)
 			case SDLK_LSHIFT:
 				type.leftShift = false;
 				break;
-			//case SDLK_SPACE:
-			//	m_controlBools.isShooting = false;
-			//	break;
-			//case SDLK_LCTRL:
-			//	m_controlBools.isUsingBomb = false;
-			//	break;
-			//case SDLK_p:
-			//case SDLK_ESCAPE:
-			//	m_controlBools.pausePressed = false;
-			//	break;
 			default:
 				break;
 			}
@@ -128,19 +108,14 @@ void Input::HandleInput(bool& isRunning)
 		//	switch (event.cbutton.button)
 		//	{
 		//	case SDL_CONTROLLER_BUTTON_B:
-		//		m_controlBools.giveThrust = true;
 		//		break;
 		//	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-		//		m_controlBools.isTurningRight = true;
 		//		break;
 		//	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-		//		m_controlBools.isTurningLeft = true;
 		//		break;
 		//	case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-		//		m_controlBools.isShooting = true;
 		//		break;
 		//	case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-		//		m_controlBools.isUsingBomb = true;
 		//		break;
 		//	default:
 		//		break;
@@ -150,19 +125,14 @@ void Input::HandleInput(bool& isRunning)
 		//	switch (event.cbutton.button)
 		//	{
 		//	case SDL_CONTROLLER_BUTTON_B:
-		//		m_controlBools.giveThrust = false;
 		//		break;
 		//	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-		//		m_controlBools.isTurningRight = false;
 		//		break;
 		//	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-		//		m_controlBools.isTurningLeft = false;
 		//		break;
 		//	case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-		//		m_controlBools.isShooting = false;
 		//		break;
 		//	case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-		//		m_controlBools.isUsingBomb = false;
 		//		break;
 		//	default:
 		//		break;
