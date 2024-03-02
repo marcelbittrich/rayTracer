@@ -60,7 +60,7 @@ bool Mover::UpdateRotation(point3& position, vec3& rotation, const Input& input,
 {
 	bool hasChanged = false;	
 
-	if (input.rightClick())
+	if (input.RightClick())
 	{
 		SDL_ShowCursor(false);
 		int prevMouseX = mouseX;

@@ -24,7 +24,7 @@ Application::Application()
 	m_renderer = SDL_CreateRenderer(m_window, -1, flags);
 
 	m_camera = std::make_unique<Camera>(m_windowInfo);
-	m_imageBuffer = std::make_unique<color[]>(m_windowWidth * m_windowHeight);
+	m_imageBuffer = new color[m_windowInfo.width * m_windowInfo.height];
 	m_windowRenderer = std::make_unique<SDLWindowRenderer>(m_renderer);
 
 	SetWorld();
@@ -40,12 +40,12 @@ void Application::SetWorld()
 	// Refraction Index: glass 1.3 - 1.7, diamond 2.4.  
 	auto materialGlass = make_shared<Dielectric>(2.4);
 
-	m_world.add(make_shared<Sphere>(point3(2, 0, -5), 1.5, materialRight));
-	m_world.add(make_shared<Sphere>(point3(0, 0, -1), 0.5, materialCenter));
-	m_world.add(make_shared<Sphere>(point3(-3, 0.5, -3), 1.0, materialLeft));
-	m_world.add(make_shared<Sphere>(point3(0, -100.5, -1), 100, materialGround));
+	m_world.addSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
+	m_world.addSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
+	m_world.addSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
+	m_world.addSphere(Sphere(point3(0, -100.5, -1), 100, materialGround));
 
-	m_world.add(make_shared<Sphere>(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
+	m_world.addSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
 }
 
 Application::~Application()
@@ -81,12 +81,12 @@ void Application::HandleEvents()
 
 void Application::Update()
 {
-	m_camera->Update(m_world, m_imageBuffer.get(), m_windowInfo);
+	m_camera->Update(m_world, m_imageBuffer, m_windowInfo);
 }
 
 void Application::Render()
 {
-	m_windowRenderer->Render(m_imageBuffer.get(), m_windowInfo);
+	m_windowRenderer->Render(m_imageBuffer, m_windowInfo);
 }
 
 

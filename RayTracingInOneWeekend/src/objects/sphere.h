@@ -38,6 +38,7 @@ public:
 
 		rec.t = root;
 		rec.p = ray.at(rec.t);
+		rec.objectCenter = m_center;
 		vec3 outwardNormal = (rec.p - m_center) / m_radius;
 		rec.SetFaceNormal(ray, outwardNormal);
 		rec.material = m_material;

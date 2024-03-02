@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <array>
 
 #include "tools/windowInfo.h"
 #include "camera.h"
@@ -24,8 +25,8 @@ private:
 	double m_deltaTime = 0.0;
 
 	WindowInfo m_windowInfo;
+	color* m_imageBuffer = nullptr;
 	std::unique_ptr<Camera> m_camera = nullptr;
-	std::unique_ptr<color[]> m_imageBuffer = nullptr;
 	std::unique_ptr<SDLWindowRenderer> m_windowRenderer = nullptr;
 	HittableList m_world;
 	SDL_Window* m_window;

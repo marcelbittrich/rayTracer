@@ -29,15 +29,16 @@ inline uint32_t PCGHash(uint32_t input)
 	return (word >> 22u) ^ word;
 }
 
-inline double fastRandomDouble(uint32_t& seed)
+inline double fastRandomDouble()
 {
+	thread_local static uint32_t seed = 0;
 	seed = PCGHash(seed);
 	return (double)seed / UINT32_MAX;
 }
 
-inline double fastRandomDouble(double min, double max, uint32_t& seed)
+inline double fastRandomDouble(double min, double max)
 {
-	return min + (max - min) * fastRandomDouble(seed);
+	return min + (max - min) * fastRandomDouble();
 }
 
 inline double randomDouble()

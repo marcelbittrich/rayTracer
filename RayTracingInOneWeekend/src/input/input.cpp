@@ -81,10 +81,10 @@ void Input::HandleInput(bool& isRunning)
 			switch (event.button.button)
 			{
 			case SDL_BUTTON_LEFT:
-				type.leftClick = true;
+				type.LeftClick = true;
 				break;
 			case SDL_BUTTON_RIGHT:
-				type.rightClick = true;
+				type.RightClick = true;
 				break;
 			default:
 				break;
@@ -94,10 +94,10 @@ void Input::HandleInput(bool& isRunning)
 			switch (event.button.button)
 			{
 			case SDL_BUTTON_LEFT:
-				type.leftClick = false;
+				type.LeftClick = false;
 				break;
 			case SDL_BUTTON_RIGHT:
-				type.rightClick = false;
+				type.RightClick = false;
 				break;
 			default:
 				break;

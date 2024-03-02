@@ -1,6 +1,13 @@
 #include "camera.h"
 
+#include <algorithm>
+#include <execution>
+
+#include "SDL_mouse.h"
+
 #include "objects/material.h"
+
+#define Multithreading 1
 
 Camera::Camera(const WindowInfo& windowInfo)
 	: m_position(vec3(0.0, 0.0, 4.0))
@@ -10,8 +17,17 @@ Camera::Camera(const WindowInfo& windowInfo)
 
 void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 {
+#if Multithreading
+	// Set itterator for multithreading
+	horizontalIter.resize(windowInfo.width);
+	verticalIter.resize(windowInfo.height);
+	for (uint32_t i = 0; i < (uint32_t)windowInfo.width; i++)
+		horizontalIter[i] = i;
+	for (uint32_t i = 0; i < (uint32_t)windowInfo.height; i++)
+		verticalIter[i] = i;
+#endif
+
 	// Calculation of the vieport local to camera
-	
 	double theta = degreesToRadians(hfov);
 	double h = tan(theta / 2);
 
@@ -47,11 +63,29 @@ void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 
 void Camera::HandleInput(const Input& input, double deltaTime)
 {
+	if (input.LeftClick())
+	{
+		m_setFocusToMouse = true;
+	}
+
 	m_hasChanged = m_mover.UpdateTranform(m_position, m_rotation, input, deltaTime);
 }
 
-void Camera::Update(const HittableList& world, color imageBuffer[], const WindowInfo& windowInfo)
+void Camera::Update(const HittableList& world, color* imageBuffer, const WindowInfo& windowInfo)
 {
+	m_currentWorld = &world;
+	m_currentWindowInfo = &windowInfo;
+	m_ImageBuffer = imageBuffer;
+
+	if (m_setFocusToMouse)
+	{
+		double prevFocusDistance = m_focusDistance;
+		m_focusDistance = GetFocusDistanceOnClick(world);
+		std::cout << m_focusDistance << std::endl;
+		m_hasChanged = prevFocusDistance != m_focusDistance;
+		m_setFocusToMouse = false;
+	}
+
 	if (m_hasChanged)
 	{ 
 		RecalculateViewport(windowInfo);
@@ -61,16 +95,41 @@ void Camera::Update(const HittableList& world, color imageBuffer[], const Window
 
 	++m_sampleCount;
 
+#if Multithreading
+
+	std::for_each(std::execution::par, verticalIter.begin(), verticalIter.end(),
+		[this](uint32_t j)
+		{
+			std::for_each(horizontalIter.begin(), horizontalIter.end(),
+			[this, j](uint32_t i)
+				{
+					color pixelColor = { 0,0,0 };
+					Ray ray = GetRay(i, j);
+					color newColor = RayColor(ray, m_maxBounce, *m_currentWorld);
+
+					if (m_sampleCount > 1)
+					{
+						pixelColor = m_ImageBuffer[j * m_currentWindowInfo->width + i];
+						const double x = (double)m_sampleCount;
+						pixelColor = pixelColor * ((x - 1) / x) + newColor * (1.0 / x);
+					}
+					else
+					{
+						pixelColor = newColor;
+					}
+
+					m_ImageBuffer[j * m_currentWindowInfo->width + i] = pixelColor;
+				});
+		});
+#else
+
 	for (int j = 0; j < windowInfo.height; j++)
 	{
 		for (int i = 0; i < windowInfo.width; i++)
 		{
-			m_seed = j * windowInfo.width + i;
-			m_seed *= m_sampleCount;
-
 			color pixelColor = { 0,0,0 };
 			Ray ray = GetRay(i, j);
-			color newColor = RayColor(ray, m_maxBounce, world, m_seed);
+			color newColor = RayColor(ray, m_maxBounce, world);
 
 			if (m_sampleCount > 1)
 			{
@@ -86,7 +145,31 @@ void Camera::Update(const HittableList& world, color imageBuffer[], const Window
 			imageBuffer[j * windowInfo.width + i] = pixelColor;
 		}
 	}
+#endif
+
 	std::cout << "Sample: " << m_sampleCount << std::endl;
+}
+
+double Camera::GetFocusDistanceOnClick(const HittableList& world) const
+{
+	int mouseX, mouseY;
+	SDL_GetMouseState(&mouseX, &mouseY);
+
+	point3 pixelCenter = m_firstPixelLocation + m_pixelDeltaU * mouseX + m_pixelDeltaV * mouseY;
+
+	point3 rayOrigin = m_position;
+	vec3 rayDirection = pixelCenter - m_position;
+
+	Ray ray(rayOrigin, rayDirection);
+	HitRecord rec;
+	if (world.Hit(ray, Interval(0.001, infinity), rec))
+	{
+		return (m_position - rec.objectCenter).length();
+	}
+	else
+	{
+		return m_focusDistance;
+	}
 }
 
 Ray Camera::GetRay(int i, int j)
@@ -111,25 +194,24 @@ Ray Camera::GetRay(int i, int j)
 
 vec3 Camera::PixelSampleSquare()
 {
-	double deltaX = -0.5 + fastRandomDouble(m_seed);
-	double deltaY = -0.5 + fastRandomDouble(m_seed);
+	double deltaX = -0.5 + fastRandomDouble();
+	double deltaY = -0.5 + fastRandomDouble();
 	return deltaX * m_pixelDeltaU + deltaY * m_pixelDeltaV;
 }
 
+
 vec3 Camera::DefocusDiskSample()
 {
-	vec3 p = fastRandomInUnitDisk(m_seed);
+	vec3 p = fastRandomInUnitDisk();
 	return m_position + p[0] * m_defocusDistanceU + p[1] * m_defocusDistanceV;
 }
 
-color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world, uint32_t seed)
+color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world)
 {
 	if (bounce <= 0)
 	{
 		return color(0, 0, 0);
 	}
-
-	seed += bounce;
 
 	HitRecord rec;
 	if (world.Hit(ray, Interval(0.001, infinity), rec))
@@ -137,9 +219,9 @@ color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world, uint32
 		Ray scatterd;
 		color attenuation;
 
-		if (rec.material->Scatter(ray, rec, attenuation, scatterd, seed))
+		if (rec.material->Scatter(ray, rec, attenuation, scatterd))
 		{
-			return attenuation * RayColor(scatterd, bounce - 1, world, seed);
+			return attenuation * RayColor(scatterd, bounce - 1, world);
 		}
 
 		return color(0, 0, 0);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "input/input.h"
 #include "input/mover.h"
@@ -15,7 +16,7 @@ public:
 	Camera(const WindowInfo& windowInfo);
 
 	void HandleInput(const Input& input, double deltaTime);
-	void Update(const HittableList& world, color imageBuffer[], const WindowInfo& windowInfo);
+	void Update(const HittableList& world, color* imageBuffer, const WindowInfo& windowInfo);
 
 	point3 GetPosition() const { return m_position; }
 	vec3 GetRotation() const{ return m_rotation; }
@@ -25,7 +26,7 @@ private:
 	int    m_maxBounce     = 10;
 	double hfov            = 60.0;
 	double m_focusDistance = 5.0;
-	double m_defocusAngle  = 3.0;
+	double m_defocusAngle  = 1.0;
 	vec3   m_defocusDistanceU;
 	vec3   m_defocusDistanceV;
 	vec3   m_pixelDeltaU;
@@ -38,8 +39,8 @@ private:
 	vec3   m_viewDirection = {0,0,-1};
 
 	int      m_sampleCount = 0;
-	uint32_t m_seed = 0;
 	bool     m_hasChanged = false;
+	bool     m_setFocusToMouse = false;
 
 	double m_movementSpeed = 1.0;
 	double m_rotatingSpeed = 1.0;
@@ -49,10 +50,16 @@ private:
 		m_rotatingSpeed,
 		m_speedMultiplier
 	};
-	
+
+	std::vector<uint32_t> horizontalIter, verticalIter;
+	const HittableList* m_currentWorld = nullptr;
+	const WindowInfo*	m_currentWindowInfo = nullptr;
+	color* m_ImageBuffer;
+
+	double GetFocusDistanceOnClick(const HittableList& world) const;
 	void RecalculateViewport(const WindowInfo& windowInfo);
 	Ray GetRay(int i, int j);
 	vec3 PixelSampleSquare();
 	vec3 DefocusDiskSample();
-	color RayColor(const Ray& ray, int maxBounce, const Hittable& world, uint32_t seed);
+	color RayColor(const Ray& ray, int maxBounce, const Hittable& world);
 };

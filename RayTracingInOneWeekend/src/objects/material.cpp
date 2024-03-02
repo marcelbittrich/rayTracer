@@ -2,9 +2,9 @@
 
 #include "hittable.h"
 
-bool Lambertian::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered, uint32_t& seed) const
+bool Lambertian::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const
 {
-    vec3 scatterDirection = rec.normal + fastRandomUnitVector(seed);
+    vec3 scatterDirection = rec.normal + fastRandomUnitVector();
 
     // Catch degenerate scatter direction
     if (scatterDirection.nearZero())
@@ -16,15 +16,15 @@ bool Lambertian::Scatter(const Ray& ray, const HitRecord& rec, color& attenuatio
     return true;
 }
 
-bool Metal::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered, uint32_t& seed) const
+bool Metal::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const
 {
     vec3 reflected = reflect(ray.direction(), rec.normal);
-    scattered = Ray(rec.p, reflected + m_fuzz * fastRandomUnitVector(seed));
+    scattered = Ray(rec.p, reflected + m_fuzz * fastRandomUnitVector());
     attenuation = m_albedo;
     return (dot(scattered.direction(), rec.normal) > 0);
 }
 
-bool Dielectric::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered, uint32_t& seed) const
+bool Dielectric::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const
 {
     attenuation = color(1, 1, 1);
     double refractionRatio = rec.frontFace ? (1.0 / m_refractionIndex) : m_refractionIndex;
@@ -37,7 +37,7 @@ bool Dielectric::Scatter(const Ray& ray, const HitRecord& rec, color& attenuatio
     bool cannotRefract = (refractionRatio * sinTheta) > 1.0;
     vec3 direction;
 
-    if (cannotRefract || (reflectance(cosTheta, refractionRatio) > fastRandomDouble(seed)))
+    if (cannotRefract || (reflectance(cosTheta, refractionRatio) > fastRandomDouble()))
     {
         direction = reflect(unitDirection, rec.normal);
     }

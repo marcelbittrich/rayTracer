@@ -9,6 +9,7 @@ struct HitRecord
 {
 	point3 p;
 	vec3 normal;
+	vec3 objectCenter;
 	shared_ptr<Material> material;
 	double t;
 	bool frontFace;
@@ -28,5 +29,4 @@ class Hittable
 public:
 	virtual ~Hittable() = default;
 	virtual bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const = 0;
-
 };

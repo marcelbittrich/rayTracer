@@ -8,8 +8,8 @@ struct InputType
 	bool right = false;
 	bool up = false;
 	bool down = false;
-	bool leftClick = false;
-	bool rightClick = false;
+	bool LeftClick = false;
+	bool RightClick = false;
 	bool leftShift = false;
 };
 
@@ -25,8 +25,8 @@ public:
 	bool Right() const { return type.right; };
 	bool Up() const { return type.up; };
 	bool Down() const { return type.down; };
-	bool leftClick() const { return type.leftClick; };
-	bool rightClick() const { return type.rightClick; };
+	bool LeftClick() const { return type.LeftClick; };
+	bool RightClick() const { return type.RightClick; };
 	bool LeftShift() const { return type.leftShift; };
 
 private:

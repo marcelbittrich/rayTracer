@@ -112,14 +112,14 @@ public:
         return vec3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
     }
 
-    static vec3 fastRandom(uint32_t& seed)
+    static vec3 fastRandom()
     {
-        return vec3(fastRandomDouble(seed), fastRandomDouble(seed), fastRandomDouble(seed));
+        return vec3(fastRandomDouble(), fastRandomDouble(), fastRandomDouble());
     }
 
-    static vec3 fastRandom(double min, double max, uint32_t& seed)
+    static vec3 fastRandom(double min, double max)
     {
-        return vec3(fastRandomDouble(min, max, seed), fastRandomDouble(min, max, seed), fastRandomDouble(min, max, seed));
+        return vec3(fastRandomDouble(min, max), fastRandomDouble(min, max), fastRandomDouble(min, max));
     }
 };
 
@@ -184,10 +184,10 @@ inline vec3 randomInUnitSphere() {
     }
 }
 
-inline vec3 fastRandomInUnitDisk(uint32_t& seed) {
+inline vec3 fastRandomInUnitDisk() {
     while (true)
     {
-        point3 p = vec3(fastRandomDouble(-1, 1, seed), fastRandomDouble(-1, 1, seed), 0);
+        point3 p = vec3(fastRandomDouble(-1, 1), fastRandomDouble(-1, 1), 0);
         if (p.length_squared() < 1)
         {
             return p;
@@ -195,10 +195,10 @@ inline vec3 fastRandomInUnitDisk(uint32_t& seed) {
     }
 }
 
-inline vec3 fastRandomInUnitSphere(uint32_t& seed) {
+inline vec3 fastRandomInUnitSphere() {
     while (true)
     {
-        point3 p = vec3::fastRandom(-1, 1, seed);
+        point3 p = vec3::fastRandom(-1, 1);
         if (p.length_squared() < 1)
         {
             return p;
@@ -211,9 +211,9 @@ inline vec3 randomUnitVector()
     return(unitVector(randomInUnitSphere()));
 }
 
-inline vec3 fastRandomUnitVector(uint32_t& seed)
+inline vec3 fastRandomUnitVector()
 {
-    return(unitVector(fastRandomInUnitSphere(seed)));
+    return(unitVector(fastRandomInUnitSphere()));
 }
 
 inline vec3 randomOnHemisphere(const vec3& normal)
@@ -229,9 +229,9 @@ inline vec3 randomOnHemisphere(const vec3& normal)
     }
 }
 
-inline vec3 fastRandomOnHemisphere(const vec3& normal, uint32_t& seed)
+inline vec3 fastRandomOnHemisphere(const vec3& normal)
 {
-    vec3 onUnitSphere = fastRandomUnitVector(seed);
+    vec3 onUnitSphere = fastRandomUnitVector();
     if (dot(normal, onUnitSphere) > 0.0)
     {
         return onUnitSphere;
