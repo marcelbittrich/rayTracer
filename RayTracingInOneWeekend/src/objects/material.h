@@ -12,6 +12,10 @@ public:
 	virtual ~Material() = default;
 
 	virtual bool Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const = 0;
+	virtual color Emitted() const
+	{
+		return color(0.0, 0.0, 0.0);
+	}
 };
 
 class Lambertian : public Material
@@ -50,4 +54,25 @@ private:
 	double m_refractionIndex;
 
 	double reflectance(double cosine, double refractionIndex) const;
+};
+
+
+class DiffuseLight : public Material
+{
+public:
+	DiffuseLight(color color, double brightness)
+		: m_lightColor(color), m_brightness(brightness) {};
+	bool Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const override 
+	{
+		return false;
+	}
+
+	color Emitted() const
+	{
+		return m_lightColor * m_brightness;
+	}
+
+private:
+	color m_lightColor;
+	double m_brightness;
 };

@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 #include "rtweekend.h"
 
 using std::sqrt;
@@ -67,6 +68,14 @@ public:
         this->Rotate(Axis::Y, eulerAngles.y());
         this->Rotate(Axis::Z, eulerAngles.z());
 
+        return *this;
+    }
+
+    vec3& Clamp(double low, double high)
+    {
+        e[0] = std::clamp(e[0], low, high);
+        e[1] = std::clamp(e[1], low, high);
+        e[2] = std::clamp(e[2], low, high);
         return *this;
     }
 

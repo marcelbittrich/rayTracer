@@ -102,22 +102,7 @@ void Camera::Update(const HittableList& world, color* imageBuffer, const WindowI
 			std::for_each(horizontalIter.begin(), horizontalIter.end(),
 			[this, j](uint32_t i)
 				{
-					color pixelColor = { 0,0,0 };
-					Ray ray = GetRay(i, j);
-					color newColor = RayColor(ray, m_maxBounce, *m_currentWorld);
-
-					if (m_sampleCount > 1)
-					{
-						pixelColor = m_ImageBuffer[j * m_currentWindowInfo->width + i];
-						const double x = (double)m_sampleCount;
-						pixelColor = pixelColor * ((x - 1) / x) + newColor * (1.0 / x);
-					}
-					else
-					{
-						pixelColor = newColor;
-					}
-
-					m_ImageBuffer[j * m_currentWindowInfo->width + i] = pixelColor;
+					SetPixelColor(i, j);
 				});
 		});
 #else
@@ -126,22 +111,7 @@ void Camera::Update(const HittableList& world, color* imageBuffer, const WindowI
 	{
 		for (int i = 0; i < windowInfo.width; i++)
 		{
-			color pixelColor = { 0,0,0 };
-			Ray ray = GetRay(i, j);
-			color newColor = RayColor(ray, m_maxBounce, world);
-
-			if (m_sampleCount > 1)
-			{
-				pixelColor = imageBuffer[j * windowInfo.width + i];
-				const double x = (double)m_sampleCount;
-				pixelColor = pixelColor * ((x - 1) / x) + newColor * (1.0 / x);
-			}
-			else
-			{
-				pixelColor = newColor;
-			}
-
-			imageBuffer[j * windowInfo.width + i] = pixelColor;
+			SetPixelColor(i, j);
 		}
 	}
 #endif
@@ -168,6 +138,26 @@ double Camera::GetFocusDistanceOnClick(const HittableList& world) const
 	{
 		return m_focusDistance;
 	}
+}
+
+void Camera::SetPixelColor(int x, int y)
+{
+	color pixelColor = { 0,0,0 };
+	Ray ray = GetRay(x, y);
+	color newColor = RayColor(ray, m_maxBounce, *m_currentWorld);
+
+	if (m_sampleCount > 1)
+	{
+		pixelColor = m_ImageBuffer[y * m_currentWindowInfo->width + x];
+		const double sc = (double)m_sampleCount;
+		pixelColor = pixelColor * ((sc - 1) / sc) + newColor * (1.0 / sc);
+	}
+	else
+	{
+		pixelColor = newColor;
+	}
+
+	m_ImageBuffer[y * m_currentWindowInfo->width + x] = pixelColor;
 }
 
 Ray Camera::GetRay(int i, int j)
@@ -212,25 +202,28 @@ color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world)
 	}
 
 	HitRecord rec;
-	if (world.Hit(ray, Interval(0.001, infinity), rec))
+	if (!world.Hit(ray, Interval(0.001, infinity), rec))
 	{
-		Ray scatterd;
-		color attenuation;
-
-		if (rec.material->Scatter(ray, rec, attenuation, scatterd))
-		{
-			return attenuation * RayColor(scatterd, bounce - 1, world);
-		}
-
-		return color(0, 0, 0);
+		// Color background with gradient if not hit.
+		vec3 unitdirection = unitVector(ray.direction());
+		double a = 0.5 * (unitdirection.y() + 1.0);
+		color startcolor = { 1.0, 0.3, 0.0 };
+		color endcolor = { 1.0, 1.0, 1.0 };
+		color lerpedcolor = startcolor * (1 - a) + endcolor * a;
+		return lerpedcolor * m_backgroundBrightness;
 	}
 
-	// Color background with gradient if not hit.
-	// viewport height range 0..1
-	vec3 unitdirection = unitVector(ray.direction());
-	double a = 0.5 * (unitdirection.y() + 1.0);
-	color startcolor = { 0.5, 0.15, 0.0 };
-	color endcolor = { 0.5, 0.5, 0.5 };
-	color lerpedcolor = startcolor * (1 - a) + endcolor * a;
-	return lerpedcolor;
+	Ray scatterd;
+	color attenuation;
+	color colorFromEmission = rec.material->Emitted();
+
+	if (!rec.material->Scatter(ray, rec, attenuation, scatterd))
+	{
+		return colorFromEmission;
+	}
+
+	color colorFromScatter = attenuation * RayColor(scatterd, bounce - 1, world);
+
+	return colorFromEmission + colorFromScatter;
 }
+

@@ -40,12 +40,16 @@ void Application::SetWorld()
 	// Refraction Index: glass 1.3 - 1.7, diamond 2.4.  
 	auto materialGlass = make_shared<Dielectric>(1.5);
 
+	auto lightMaterial = make_shared<DiffuseLight>(color(1.0, 1.0, 1.0), 4.0);
+
 	m_world.addSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
 	m_world.addSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
 	m_world.addSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
 	m_world.addSphere(Sphere(point3(0, -100.5, -1), 100, materialGround));
 
 	m_world.addSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
+
+	m_world.addSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
 }
 
 Application::~Application()

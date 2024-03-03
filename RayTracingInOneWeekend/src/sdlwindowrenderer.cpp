@@ -17,6 +17,7 @@ void SDLWindowRenderer::Render(color imageBuffer[], const WindowInfo& windowInfo
 	{
 		for (int i = 0; i < windowWidth; i++)
 		{
+			imageBuffer[j * windowWidth + i].Clamp(0.0, 1.0);
 			//write_color(std::cout, m_imageBuffer.get()[j * m_imageWidth + i]);
 
 			double rd = lineraToGamma(imageBuffer[j * windowWidth + i].x());
