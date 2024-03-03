@@ -77,7 +77,7 @@ void Camera::Update(const HittableList& world, color* imageBuffer, const WindowI
 	m_currentWindowInfo = &windowInfo;
 	m_ImageBuffer = imageBuffer;
 
-	if (m_setFocusToMouse)
+	if (m_hasFocusBlur && m_setFocusToMouse)
 	{
 		double prevFocusDistance = m_focusDistance;
 		m_focusDistance = GetFocusDistanceOnClick(world);
@@ -96,7 +96,6 @@ void Camera::Update(const HittableList& world, color* imageBuffer, const WindowI
 	++m_sampleCount;
 
 #if Multithreading
-
 	std::for_each(std::execution::par, verticalIter.begin(), verticalIter.end(),
 		[this](uint32_t j)
 		{
@@ -156,12 +155,11 @@ double Camera::GetFocusDistanceOnClick(const HittableList& world) const
 	SDL_GetMouseState(&mouseX, &mouseY);
 
 	point3 pixelCenter = m_firstPixelLocation + m_pixelDeltaU * mouseX + m_pixelDeltaV * mouseY;
-
 	point3 rayOrigin = m_position;
 	vec3 rayDirection = pixelCenter - m_position;
-
 	Ray ray(rayOrigin, rayDirection);
 	HitRecord rec;
+
 	if (world.Hit(ray, Interval(0.001, infinity), rec))
 	{
 		return (m_position - rec.objectCenter).length();
@@ -231,8 +229,8 @@ color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world)
 	// viewport height range 0..1
 	vec3 unitdirection = unitVector(ray.direction());
 	double a = 0.5 * (unitdirection.y() + 1.0);
-	color startcolor = { 1.0, 1.0, 1.0 };
-	color endcolor = { 0.5, 0.7, 1.0 };
+	color startcolor = { 0.5, 0.15, 0.0 };
+	color endcolor = { 0.5, 0.5, 0.5 };
 	color lerpedcolor = startcolor * (1 - a) + endcolor * a;
 	return lerpedcolor;
 }

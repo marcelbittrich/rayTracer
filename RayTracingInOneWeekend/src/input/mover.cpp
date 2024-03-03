@@ -35,6 +35,11 @@ bool Mover::UpdatePosition(point3& position, vec3& rotation, const Input& input,
 		change += vec3(m_movementSpeed, 0, 0) * deltaTime;
 		hasChanged = true;
 	}
+	
+	// Rotate here so Up and Down are 
+	// always considered in global space.
+	change.Rotate(rotation);
+	
 	if (input.Up())
 	{
 		change += vec3(0, m_movementSpeed, 0) * deltaTime;
@@ -51,7 +56,6 @@ bool Mover::UpdatePosition(point3& position, vec3& rotation, const Input& input,
 		change *= m_speedMultiplier;
 	}
 
-	change.Rotate(rotation);
 	position += change;
 	return hasChanged;
 }
