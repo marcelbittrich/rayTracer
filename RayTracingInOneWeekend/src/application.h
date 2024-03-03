@@ -34,6 +34,7 @@ private:
 	Input m_input;
 
 	void SetWorld();
+	void AddRandomSpheres(HittableList& world);
 	void HandleEvents();
 	void Update();
 	void Render();

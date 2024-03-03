@@ -40,16 +40,54 @@ void Application::SetWorld()
 	// Refraction Index: glass 1.3 - 1.7, diamond 2.4.  
 	auto materialGlass = make_shared<Dielectric>(1.5);
 
-	auto lightMaterial = make_shared<DiffuseLight>(color(1.0, 1.0, 1.0), 4.0);
+	auto lightMaterial = make_shared<DiffuseLight>(color(0.99, 0.98, 0.82), 5.0);
 
 	m_world.addSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
 	m_world.addSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
 	m_world.addSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
-	m_world.addSphere(Sphere(point3(0, -100.5, -1), 100, materialGround));
+	m_world.addSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
 
 	m_world.addSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
 
-	m_world.addSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
+	m_world.addSphere(Sphere(point3(0, 20, -2), 5.0, lightMaterial));
+
+	AddRandomSpheres(m_world);
+}
+
+void Application::AddRandomSpheres(HittableList& world)
+{
+	int count = 5;
+	double size = 0.1;
+	double distance = 4;
+
+	for (int i = -count; i <= count; i++)
+	{
+		for (int j = -count; j <= count; j++)
+		{
+			double x = fastRandomDouble(-1, 1) * size + (double)i * size * 4.0;
+			double y = -0.4;
+			double z = fastRandomDouble(-1, 1) * size + (double)j * size * 4.0;
+			color sphereColor = vec3::fastRandom(0.0, 1.0);
+
+			int materialSelector = (int)fastRandomDouble(0.0, 2.99);
+			
+			if (materialSelector == 0)
+			{
+				auto labertian = make_shared<Lambertian>(sphereColor);
+				m_world.addSphere(Sphere(point3(x, y, z), 0.1, labertian));
+			}
+			else if (materialSelector == 1)
+			{
+				auto metal = make_shared<Metal>(sphereColor, fastRandomDouble(0.0, 1.0));
+				m_world.addSphere(Sphere(point3(x, y, z), 0.1, metal));
+			}
+			else if (materialSelector == 2)
+			{
+				auto glass = make_shared<Dielectric>(fastRandomDouble(1.3, 2.4));
+				m_world.addSphere(Sphere(point3(x, y, z), 0.1, glass));
+			}
+		}
+	}
 }
 
 Application::~Application()
