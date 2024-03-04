@@ -1,9 +1,9 @@
 # Ray Tracing In One Weekend
 
-![Lights](https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/89b6a9c1-d8c1-4eb3-8e2a-dd25b685747e)
 
-![Lights2](https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/d32101f2-5f9f-4765-b016-0c1231934e3c)
+![Lights_1](https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/b3a39a82-7297-40fc-ada9-6c8b57c0870d)
+![Lights_2](https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/2596898f-9fb5-4ab4-bd4d-831714e844b8)
 
-(under construction)
+(work in progress)
 
 My own take on the book Ray Tracing in One Weekend. I made some key changes, most notably it runs in real time and you can move the camera freely.
