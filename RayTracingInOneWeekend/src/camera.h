@@ -22,11 +22,11 @@ public:
 	vec3 GetRotation() const{ return m_rotation; }
 
 private:
-	const bool m_hasFocusBlur  = false;
+	const bool m_hasFocusBlur  = true;
 	int    m_maxBounce     = 10;
 	double hfov            = 60.0;
 	double m_focusDistance = 5.0;
-	double m_defocusAngle  = 1.0;
+	double m_defocusAngle  = 1.5;
 	double m_backgroundBrightness = 0.2;
 	vec3   m_defocusDistanceU;
 	vec3   m_defocusDistanceV;

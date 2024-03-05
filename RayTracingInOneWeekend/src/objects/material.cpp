@@ -26,7 +26,7 @@ bool Metal::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ra
 
 bool Dielectric::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const
 {
-    attenuation = color(1, 1, 1);
+    attenuation = m_albedo;
     double refractionRatio = rec.frontFace ? (1.0 / m_refractionIndex) : m_refractionIndex;
 
     vec3 unitDirection = unitVector(ray.direction());

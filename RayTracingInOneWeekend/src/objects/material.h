@@ -45,14 +45,14 @@ private:
 class Dielectric : public Material
 {
 public:
-	Dielectric(double refrectionIndex)
-		: m_refractionIndex(refrectionIndex){}
+	Dielectric(const color& albedo, double refrectionIndex)
+		: m_albedo(albedo), m_refractionIndex(refrectionIndex){}
 
 	bool Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const override;
 
 private:
+	color m_albedo;
 	double m_refractionIndex;
-
 	double reflectance(double cosine, double refractionIndex) const;
 };
 

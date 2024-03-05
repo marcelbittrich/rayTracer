@@ -38,7 +38,7 @@ void Application::SetWorld()
 	auto materialRight  = make_shared<Metal>(color(0.82, 0.68, 0.22), 0.7);
 
 	// Refraction Index: glass 1.3 - 1.7, diamond 2.4.  
-	auto materialGlass = make_shared<Dielectric>(1.5);
+	auto materialGlass = make_shared<Dielectric>(color(1.0, 1.0, 1.0), 2.4);
 
 	auto lightMaterial = make_shared<DiffuseLight>(color(0.99, 0.98, 0.82), 5.0);
 
@@ -83,7 +83,7 @@ void Application::AddRandomSpheres(HittableList& world)
 			}
 			else if (materialSelector == 2)
 			{
-				auto glass = make_shared<Dielectric>(fastRandomDouble(1.3, 2.4));
+				auto glass = make_shared<Dielectric>(sphereColor, fastRandomDouble(1.3, 2.4));
 				m_world.addSphere(Sphere(point3(x, y, z), 0.1, glass));
 			}
 		}
