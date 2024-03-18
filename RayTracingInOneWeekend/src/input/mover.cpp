@@ -63,32 +63,25 @@ bool Mover::UpdatePosition(point3& position, vec3& rotation, const Input& input,
 bool Mover::UpdateRotation(point3& position, vec3& rotation, const Input& input, double deltaTime)
 {
 	bool hasChanged = false;	
+	
+	int deltaMouseX, deltaMouseY;
+	SDL_GetRelativeMouseState(&deltaMouseX, &deltaMouseY);
 
 	if (input.RightClick())
 	{
-		SDL_ShowCursor(false);
-		int prevMouseX = mouseX;
-		int prevMouseY = mouseY;
-
-		SDL_GetMouseState(&mouseX, &mouseY);
-		int deltaMouseX = mouseX - prevMouseX;
-		int deltaMouseY = mouseY - prevMouseY;
-
-		//std::cout << deltaMouseX << " " << deltaMouseY << std::endl;
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 
 		double yAngle = -(double)deltaMouseX * deltaTime * 0.5;
 		double xAngle = -(double)deltaMouseY * deltaTime * 0.5;
 		vec3 eulerAngles = { xAngle, yAngle, 0 };
-
 		rotation += vec3(xAngle, yAngle, 0);
 
 		hasChanged = true;
-		//std::cout << yAngle << std::endl;
 	}
 	else 
 	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
 		SDL_ShowCursor(true);
-		SDL_GetMouseState(&mouseX, &mouseY);
 	}
 
 	return hasChanged;

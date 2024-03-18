@@ -51,7 +51,8 @@ void Application::SetWorld()
 
 	m_world.addSphere(Sphere(point3(0, 20, -2), 5.0, lightMaterial));
 
-	AddRandomSpheres(m_world);
+	if(m_hasRandomSpheres)
+		AddRandomSpheres(m_world);
 }
 
 void Application::AddRandomSpheres(HittableList& world)
@@ -110,7 +111,7 @@ void Application::Run()
 	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> timeSpan = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
 	m_deltaTime = timeSpan.count();
-	std::clog << "Took " << m_deltaTime << "s to calculate" << std::endl;
+	std::cout << "Took " << m_deltaTime << "s to calculate" << std::endl;
 }
 
 
