@@ -1,4 +1,4 @@
-# Ray Tracing In One Weekend
+# Ray Tracer
 
 
 ![Lights_1](https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/b3a39a82-7297-40fc-ada9-6c8b57c0870d)
@@ -10,4 +10,4 @@ https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/13a79a
 
 (work in progress)
 
-My own take on the book Ray Tracing in One Weekend. I made some key changes, most notably it runs in real time and you can move the camera freely.
+A CPU-based ray tracer in an real-time environment with a controllable camera. Relies on C++ 17 parallel programming features and SDL2 for window creation and input control.
