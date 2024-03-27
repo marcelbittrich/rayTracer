@@ -93,6 +93,7 @@ void Application::AddRandomSpheres(HittableList& world)
 
 Application::~Application()
 {
+	delete[] m_imageBuffer;
 	SDL_DestroyWindow(m_window);
 	SDL_DestroyRenderer(m_renderer);
 	SDL_Quit();

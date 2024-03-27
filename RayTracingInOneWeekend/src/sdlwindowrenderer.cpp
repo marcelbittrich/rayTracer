@@ -48,6 +48,13 @@ SDLWindowRenderer::SDLWindowRenderer(SDL_Renderer* renderer, const WindowInfo& w
 	}
 }
 
+SDLWindowRenderer::~SDLWindowRenderer()
+{
+	delete[] m_bloomBuffer;
+	delete[] m_tempBloomBuffer;
+	delete[] m_finalFrameBuffer;
+}
+
 void SDLWindowRenderer::Render(color imageBuffer[], const WindowInfo& windowInfo)
 {
 	m_rawImageBuffer = imageBuffer;

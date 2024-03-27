@@ -13,6 +13,7 @@ class SDLWindowRenderer
 {
 public:
 	SDLWindowRenderer(SDL_Renderer* renderer, const WindowInfo& windowInfo);
+	~SDLWindowRenderer();
 	void Render(color imageBuffer[], const WindowInfo& windowInfo);
 
 private:
