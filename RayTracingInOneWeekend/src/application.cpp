@@ -38,9 +38,9 @@ void Application::SetWorld()
 	auto materialRight  = make_shared<Metal>(color(0.82, 0.68, 0.22), 0.7);
 
 	// Refraction Index: glass 1.3 - 1.7, diamond 2.4.  
-	auto materialGlass = make_shared<Dielectric>(color(1.0, 1.0, 1.0), 2.4);
+	auto materialGlass = make_shared<Dielectric>(color(1.0, 1.0, 1.0), 1.5);
 
-	auto lightMaterial = make_shared<DiffuseLight>(color(0.99, 0.98, 0.82), 5.0);
+	auto lightMaterial = make_shared<DiffuseLight>(color(1, 1, 1), 3.0);
 
 	m_world.addSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
 	m_world.addSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
@@ -49,7 +49,7 @@ void Application::SetWorld()
 
 	m_world.addSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
 
-	m_world.addSphere(Sphere(point3(0, 20, -2), 5.0, lightMaterial));
+	m_world.addSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
 
 	if(m_hasRandomSpheres)
 		AddRandomSpheres(m_world);
@@ -115,13 +115,26 @@ void Application::Run()
 	const int sample = m_camera->GetSampleNumber();
 	const double sc = (double)sample;
 	m_averagedeltaTime = m_averagedeltaTime * ((sc - 1) / sc) + m_deltaTime * (1.0 / sc);
-	std::clog << "Sample: " << sample << " / Avg time per frame: " << m_averagedeltaTime << "s    \r" << std::flush;
+	//std::clog << "Sample: " << sample << " / Avg time per frame: " << m_averagedeltaTime << "s    \r" << std::flush;
 }
 
 
 void Application::HandleEvents()
 {
 	m_input.HandleInput(m_running);
+
+	if (m_input.WindowResized())
+	{
+		m_windowInfo.hasChanged = true;		
+		SDL_GetWindowSize(m_window, &m_windowInfo.width, &m_windowInfo.height);
+		delete[] m_imageBuffer;
+		m_imageBuffer = new color[m_windowInfo.width * m_windowInfo.height];
+	}
+	else
+	{
+		m_windowInfo.hasChanged = false;
+	}
+
 	m_camera->HandleInput(m_input, m_deltaTime);
 }
 
@@ -134,5 +147,3 @@ void Application::Render()
 {
 	m_windowRenderer->Render(m_imageBuffer, m_windowInfo);
 }
-
-

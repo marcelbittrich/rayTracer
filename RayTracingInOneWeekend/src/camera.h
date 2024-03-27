@@ -28,7 +28,7 @@ private:
 	double hfov            = 60.0;
 	double m_focusDistance = 5.0;
 	double m_defocusAngle  = 1.5;
-	double m_backgroundBrightness = 0.2;
+	double m_backgroundBrightness = 0.1;
 	vec3   m_defocusDistanceU;
 	vec3   m_defocusDistanceV;
 	vec3   m_pixelDeltaU;

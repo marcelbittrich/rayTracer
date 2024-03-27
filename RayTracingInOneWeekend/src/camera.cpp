@@ -19,6 +19,8 @@ void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 {
 #if Multithreading
 	// Set itterator for multithreading
+	horizontalIter.clear();
+	verticalIter.clear();
 	horizontalIter.resize(windowInfo.width);
 	verticalIter.resize(windowInfo.height);
 	for (uint32_t i = 0; i < (uint32_t)windowInfo.width; i++)
@@ -85,7 +87,7 @@ void Camera::Update(const HittableList& world, color* imageBuffer, const WindowI
 		m_setFocusToMouse = false;
 	}
 
-	if (m_hasChanged)
+	if (m_hasChanged || windowInfo.hasChanged)
 	{ 
 		RecalculateViewport(windowInfo);
 		m_sampleCount = 0;

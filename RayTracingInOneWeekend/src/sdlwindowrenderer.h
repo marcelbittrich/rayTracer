@@ -16,9 +16,9 @@ public:
 	void Render(color imageBuffer[], const WindowInfo& windowInfo);
 
 private:
-	const bool m_bloom = true;
-	const float m_stdDev = 4.f;
-	const float m_bloomIntensity = 2.f;
+	const bool m_bloom = false;
+	const float m_stdDev = 2.f;
+	const float m_bloomIntensity = 1.5f;
 	const float m_eulerNumber = 2.71828182845904523536f;
 	SDL_Renderer* m_renderer = nullptr;
 	color* m_rawImageBuffer = nullptr;

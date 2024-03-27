@@ -4,6 +4,8 @@
 
 void Input::HandleInput(bool& isRunning)
 {
+	type.windowResize = false;
+
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
@@ -11,6 +13,12 @@ void Input::HandleInput(bool& isRunning)
 		{
 		case SDL_QUIT:
 			isRunning = false;
+			break;
+		case SDL_WINDOWEVENT:
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				type.windowResize = true;
+			}
 			break;
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym)
