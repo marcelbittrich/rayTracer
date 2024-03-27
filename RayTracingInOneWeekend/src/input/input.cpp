@@ -1,6 +1,7 @@
 #include "input.h"
 
 #include "SDL.h"
+#include "imgui_impl_sdl2.h"
 
 void Input::HandleInput(bool& isRunning)
 {
@@ -9,6 +10,8 @@ void Input::HandleInput(bool& isRunning)
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
+		ImGui_ImplSDL2_ProcessEvent(&event);
+
 		switch (event.type)
 		{
 		case SDL_QUIT:

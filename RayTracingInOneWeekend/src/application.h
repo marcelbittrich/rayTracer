@@ -8,6 +8,11 @@
 #include "sdlwindowrenderer.h"
 #include "input/input.h"
 
+#include "imgui.h"
+#include "imgui_impl_sdlrenderer2.h"
+#include "imgui_impl_sdl2.h"
+#include <stdio.h>
+
 class Application
 {
 public:
@@ -34,6 +39,11 @@ private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
 	Input m_input;
+
+	bool m_showGuiDemo = true;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	bool m_applyBloom = false;
+	bool m_lockInput = false;
 
 	void SetWorld();
 	void AddRandomSpheres(HittableList& world);

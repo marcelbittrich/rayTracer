@@ -11,7 +11,6 @@ SDLWindowRenderer::SDLWindowRenderer(SDL_Renderer* renderer, const WindowInfo& w
 {
 	m_bloomBuffer = new color[windowInfo.height * windowInfo.width];
 	m_tempBloomBuffer = new color[windowInfo.height * windowInfo.width];
-	m_finalFrameBuffer = new color[windowInfo.height * windowInfo.width];
 
 	int pixelSampleDistance = 0;
 	float gausianSampleWeight = 1;
@@ -52,11 +51,15 @@ SDLWindowRenderer::~SDLWindowRenderer()
 {
 	delete[] m_bloomBuffer;
 	delete[] m_tempBloomBuffer;
-	delete[] m_finalFrameBuffer;
 }
 
 void SDLWindowRenderer::Render(color imageBuffer[], const WindowInfo& windowInfo)
 {
+	if (windowInfo.hasChanged)
+	{
+		OnWindowChange(windowInfo);
+	}
+
 	m_rawImageBuffer = imageBuffer;
 	m_finalFrameBuffer = m_bloom ? AddBloom(m_rawImageBuffer, windowInfo) : m_rawImageBuffer;
 
@@ -94,8 +97,6 @@ void SDLWindowRenderer::Render(color imageBuffer[], const WindowInfo& windowInfo
 	SDL_RenderCopy(m_renderer, texture, &imageRect, &imageRect);
 
 	SDL_DestroyTexture(texture);
-
-	SDL_RenderPresent(m_renderer);
 }
 
 void SDLWindowRenderer::SetPixel(SDL_Surface* surface, int x, int y, Uint32 pixel)
@@ -194,6 +195,13 @@ color* SDLWindowRenderer::AddBloom(color imageBuffer[], const WindowInfo& window
 	return m_tempBloomBuffer;
 }
 
+void SDLWindowRenderer::OnWindowChange(const WindowInfo& windowInfo)
+{
+	delete[] m_bloomBuffer;
+	delete[] m_tempBloomBuffer;
+	m_bloomBuffer = new color[windowInfo.height * windowInfo.width];
+	m_tempBloomBuffer = new color[windowInfo.height * windowInfo.width];
+}
 
 color SDLWindowRenderer::HorizontalGaussianBlur(int pixelIndex, int pixelCount)
 {
