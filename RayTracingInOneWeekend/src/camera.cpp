@@ -81,7 +81,6 @@ void Camera::Update(const HittableList& world, color* imageBuffer, const WindowI
 	{
 		double prevFocusDistance = m_focusDistance;
 		m_focusDistance = GetFocusDistanceOnClick(world);
-		std::cout << m_focusDistance << std::endl;
 		m_hasChanged = prevFocusDistance != m_focusDistance;
 		m_setFocusToMouse = false;
 	}
@@ -115,8 +114,6 @@ void Camera::Update(const HittableList& world, color* imageBuffer, const WindowI
 		}
 	}
 #endif
-
-	std::cout << "Sample: " << m_sampleCount << std::endl;
 }
 
 double Camera::GetFocusDistanceOnClick(const HittableList& world) const

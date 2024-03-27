@@ -23,6 +23,7 @@ private:
 	double m_aspectRatio = 16.0 / 9.0;
 	int    m_windowHeight = ((int)(m_windowWidth / m_aspectRatio) < 1) ? 1 : (int)(m_windowWidth / m_aspectRatio);
 	double m_deltaTime = 0.0;
+	double m_averagedeltaTime = 0.0;
 	const bool m_hasRandomSpheres = false;
 
 	WindowInfo m_windowInfo;

@@ -264,3 +264,4 @@ inline vec3 refract(const vec3& vector, const vec3& normal, double etaiOverEtat)
 
     return rayOutPerp + rayOutParallel;
 }
+

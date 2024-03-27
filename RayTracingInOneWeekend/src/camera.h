@@ -20,9 +20,10 @@ public:
 
 	point3 GetPosition() const { return m_position; }
 	vec3 GetRotation() const{ return m_rotation; }
+	int GetSampleNumber() const { return m_sampleCount; }
 
 private:
-	const bool m_hasFocusBlur  = true;
+	const bool m_hasFocusBlur = true;
 	int    m_maxBounce     = 10;
 	double hfov            = 60.0;
 	double m_focusDistance = 5.0;

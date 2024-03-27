@@ -25,7 +25,7 @@ Application::Application()
 
 	m_camera = std::make_unique<Camera>(m_windowInfo);
 	m_imageBuffer = new color[m_windowInfo.width * m_windowInfo.height];
-	m_windowRenderer = std::make_unique<SDLWindowRenderer>(m_renderer);
+	m_windowRenderer = std::make_unique<SDLWindowRenderer>(m_renderer, m_windowInfo);
 
 	SetWorld();
 }
@@ -111,9 +111,12 @@ void Application::Run()
 	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> timeSpan = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
 	m_deltaTime = timeSpan.count();
-	std::cout << "Took " << m_deltaTime << "s to calculate" << std::endl;
-}
 
+	const int sample = m_camera->GetSampleNumber();
+	const double sc = (double)sample;
+	m_averagedeltaTime = m_averagedeltaTime * ((sc - 1) / sc) + m_deltaTime * (1.0 / sc);
+	std::clog << "Sample: " << sample << " / Avg time per frame: " << m_averagedeltaTime << "s    \r" << std::flush;
+}
 
 
 void Application::HandleEvents()
