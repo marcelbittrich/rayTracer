@@ -4,15 +4,21 @@
 
 struct criticalData
 {
+	// World
+	bool hasWorldChanged = false;
+
 	// Tracer Config
-	int rayBounces = 10;
+	bool   hasFocusBlur = true;
+	int    rayBounces = 10;
 	double backgroundBrightness = 0.1;
 	double hfov = 60.0;
 	double defocusAngle = 1.5;
+	double focusDistance = 10.0;
 
 	// Camera
 	vec3 camPosition{ -1, -1, -1 };
 	vec3 camRotation{ -1, -1, -1 };
+
 };
 
 struct nonCriticalData

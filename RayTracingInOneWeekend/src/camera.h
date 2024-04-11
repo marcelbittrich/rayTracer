@@ -29,7 +29,7 @@ public:
 	void SetHasChanged(bool value) { m_hasChanged = value; }
 
 private:
-	const bool m_hasFocusBlur = true;
+	bool   m_hasFocusBlur  = true;
 	int    m_maxBounce     = 10;
 	double m_hfov          = 60.0;
 	double m_focusDistance = 5.0;

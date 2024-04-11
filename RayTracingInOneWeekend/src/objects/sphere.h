@@ -46,8 +46,8 @@ public:
 		return true;
 	}
 
-private:
 	point3 m_center;
 	double m_radius;
 	shared_ptr<Material> m_material;
+private:
 };

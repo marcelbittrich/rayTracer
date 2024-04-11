@@ -128,6 +128,8 @@ void Camera::GetDataForUI(UIData& uiData) const
 	uiData.critical.backgroundBrightness = m_backgroundBrightness;
 	uiData.critical.hfov = m_hfov;
 	uiData.critical.defocusAngle = m_defocusAngle;
+	uiData.critical.hasFocusBlur = m_hasFocusBlur;
+	uiData.critical.focusDistance = m_focusDistance;
 }
 
 void Camera::SetDataFromUI(const UIData& uiData)
@@ -138,6 +140,8 @@ void Camera::SetDataFromUI(const UIData& uiData)
 	m_backgroundBrightness = uiData.critical.backgroundBrightness;
 	m_hfov = uiData.critical.hfov;
 	m_defocusAngle = uiData.critical.defocusAngle;
+	m_hasFocusBlur = uiData.critical.hasFocusBlur;
+	m_focusDistance = uiData.critical.focusDistance;
 }
 
 double Camera::GetFocusDistanceOnClick(const HittableList& world) const
@@ -153,7 +157,8 @@ double Camera::GetFocusDistanceOnClick(const HittableList& world) const
 
 	if (world.Hit(ray, Interval(0.001, infinity), rec))
 	{
-		return (m_position - rec.objectCenter).length();
+		double newfocusDistance = (m_position - rec.objectCenter).length();
+		return newfocusDistance > 100.0 ? m_focusDistance : newfocusDistance;
 	}
 	else
 	{

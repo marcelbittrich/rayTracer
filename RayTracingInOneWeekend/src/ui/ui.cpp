@@ -1,6 +1,7 @@
 #include "ui.h"
 
 #include <iostream>
+#include <string>
 
 #include "SDL_render.h"
 
@@ -31,7 +32,7 @@ UI::~UI()
 	ImGui::DestroyContext();
 }
 
-void UI::Update(UIData& data)
+void UI::Update(UIData& data, HittableList& world)
 {
 	UIData& uiData = data;
 
@@ -43,12 +44,11 @@ void UI::Update(UIData& data)
 
 	ImGuiIO& io = ImGui::GetIO();
 	{
-		ImGui::Begin("Scene");
+		ImGui::Begin("Camera");
 		{
 			ImGui::Checkbox("Lock Camera Input", &uiData.nonCritical.lockInput);
 			if (ImGui::CollapsingHeader("Critical"))
 			{
-				ImGui::SeparatorText("Camera");
 				{
 					vec3& camPos = uiData.critical.camPosition;
 					float vec[3] = { (float)camPos.x(), (float)camPos.y(), (float)camPos.z() };
@@ -77,7 +77,6 @@ void UI::Update(UIData& data)
 							uiData.critical.rayBounces = bounces;
 					}
 				}
-
 				{
 					float backgroundBrightness = (float)uiData.critical.backgroundBrightness;
 					float upperLimit = 1.0f;
@@ -92,7 +91,6 @@ void UI::Update(UIData& data)
 							uiData.critical.backgroundBrightness = backgroundBrightness;
 					}
 				}
-
 				{
 					float hfov = (float)uiData.critical.hfov;
 					float upperLimit = 180.0f;
@@ -108,6 +106,21 @@ void UI::Update(UIData& data)
 					}
 				}
 
+				ImGui::Checkbox("Focus Blur", &uiData.critical.hasFocusBlur);
+				{
+					float foucsDistance = (float)uiData.critical.focusDistance;
+					float upperLimit = 100.0f;
+					float lowerLimit = 1.0f;
+					if (ImGui::DragFloat("Focus Distance", &foucsDistance, 1.0F, lowerLimit, upperLimit))
+					{
+						if (foucsDistance > upperLimit)
+							uiData.critical.focusDistance = upperLimit;
+						else if (foucsDistance < lowerLimit)
+							uiData.critical.focusDistance = lowerLimit;
+						else
+							uiData.critical.focusDistance = foucsDistance;
+					}
+				}
 				{
 					float defocusAngle = (float)uiData.critical.defocusAngle;
 					float upperLimit = 5.0f;
@@ -131,6 +144,45 @@ void UI::Update(UIData& data)
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 			ImGui::Text("Sample: %d", uiData.nonCritical.sample);
+		}
+		ImGui::End();
+
+		ImGui::Begin("Scene");
+		{
+			ImGui::SeparatorText("Ojects");
+			bool& hasWorldChanged = uiData.critical.hasWorldChanged;
+			hasWorldChanged = false;
+			int sphereIndex = 0;
+			for (Sphere& object : world.m_spheres)
+			{
+				sphereIndex++;
+				std::string name = "Sphere " + std::to_string(sphereIndex);
+				if (ImGui::TreeNode(name.c_str()))
+				{
+					{
+						vec3& objectPos = object.m_center;
+						float vec[3] = { (float)objectPos.x(), (float)objectPos.y(), (float)objectPos.z() };
+						if (ImGui::InputFloat3("Position", vec))
+						{
+							objectPos[0] = (double)vec[0];
+							objectPos[1] = (double)vec[1];
+							objectPos[2] = (double)vec[2];
+							hasWorldChanged = true;
+						};
+					}
+
+					{
+						float objectRadius = (float)object.m_radius;
+						if (ImGui::DragFloat("Radius", &objectRadius, 0.1f, 0.01f, 100.f))
+						{
+							object.m_radius = objectRadius;
+							hasWorldChanged = true;
+						};
+					}
+
+					ImGui::TreePop();
+				};
+			}
 		}
 		ImGui::End();
 

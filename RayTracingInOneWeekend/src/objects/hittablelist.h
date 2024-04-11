@@ -28,6 +28,7 @@ public:
 		bool hitAnything = false;
 		double closestSoFar = rayT.max;
 
+		// TODO: Compare performance before deletion
 		// Old approach with list of pointers
 		//for (const shared_ptr<Hittable>& object : objects)
 		//{

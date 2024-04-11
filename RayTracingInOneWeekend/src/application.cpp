@@ -156,11 +156,12 @@ void Application::Update()
 	std::string dataString = std::string((char*)&m_uiData.critical, sizeof(m_uiData.critical));
 	size_t dataHashBefore = std::hash<std::string>{}(dataString);
 
-	m_ui->Update(m_uiData);
+	m_ui->Update(m_uiData, m_world);
 
 	dataString = std::string((char*)&m_uiData.critical, sizeof(m_uiData.critical));
 	size_t dataHashAfter = std::hash<std::string>{}(dataString);
 
+	//if (dataString.compare(dataString2))
 	if (dataHashBefore != dataHashAfter)
 	{
 		std::cout << "has changed" << std::endl;
