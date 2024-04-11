@@ -158,6 +158,7 @@
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\ui\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imGUI\imconfig.h" />
@@ -185,6 +186,8 @@
     <ClInclude Include="src\tools\ray.h" />
     <ClInclude Include="src\tools\windowinfo.h" />
     <ClInclude Include="src\tools\vec3.h" />
+    <ClInclude Include="src\ui\uidata.h" />
+    <ClInclude Include="src\ui\ui.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

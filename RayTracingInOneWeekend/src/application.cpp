@@ -7,7 +7,9 @@
 #include "objects/sphere.h"
 #include "objects/material.h"
 #include "tools/color.h"
+#include "imgui.h"
 
+#include <String>
 
 Application::Application()
 {
@@ -24,25 +26,11 @@ Application::Application()
 	Uint32 flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 	m_renderer = SDL_CreateRenderer(m_window, -1, flags);
 
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsLight();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForSDLRenderer(m_window, m_renderer);
-	ImGui_ImplSDLRenderer2_Init(m_renderer);
-
+	m_ui = std::make_unique<UI>(m_window, m_renderer);
 	m_camera = std::make_unique<Camera>(m_windowInfo);
-	m_imageBuffer = new color[m_windowInfo.width * m_windowInfo.height];
 	m_windowRenderer = std::make_unique<SDLWindowRenderer>(m_renderer, m_windowInfo);
+
+	m_imageBuffer = new color[m_windowInfo.width * m_windowInfo.height];
 
 	SetWorld();
 }
@@ -112,10 +100,6 @@ Application::~Application()
 {
 	delete[] m_imageBuffer;
 
-	ImGui_ImplSDLRenderer2_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
-
 	SDL_DestroyWindow(m_window);
 	SDL_DestroyRenderer(m_renderer);
 	SDL_Quit();
@@ -159,7 +143,7 @@ void Application::HandleEvents()
 	}
 
 	ImGuiIO& io = ImGui::GetIO();
-	if (!io.WantCaptureMouse && !m_lockInput)
+	if (!io.WantCaptureMouse && !m_uiData.nonCritical.lockInput)
 	{
 		m_camera->HandleInput(m_input, m_deltaTime);
 	}
@@ -167,49 +151,30 @@ void Application::HandleEvents()
 
 void Application::Update()
 {
-	m_camera->Update(m_world, m_imageBuffer, m_windowInfo);
+	m_camera->GetDataForUI(m_uiData);
 
-	ImGui_ImplSDLRenderer2_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
-	ImGui::NewFrame();
-	ImGuiDockNodeFlags flags = ImGuiDockNodeFlags_PassthruCentralNode;
-	ImGui::DockSpaceOverViewport((const ImGuiViewport *) 0, flags, (const ImGuiWindowClass *) 0);
-	ImGui::ShowDemoWindow(&m_showGuiDemo);
+	std::string dataString = std::string((char*)&m_uiData.critical, sizeof(m_uiData.critical));
+	size_t dataHashBefore = std::hash<std::string>{}(dataString);
 
-	ImGuiIO& io = ImGui::GetIO();
+	m_ui->Update(m_uiData);
+
+	dataString = std::string((char*)&m_uiData.critical, sizeof(m_uiData.critical));
+	size_t dataHashAfter = std::hash<std::string>{}(dataString);
+
+	if (dataHashBefore != dataHashAfter)
 	{
-		static float f = 0.0f;
-		static int counter = 0;
-
-		ImGui::Begin("Secne Data");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &m_showGuiDemo);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &m_showGuiDemo);
-		ImGui::Checkbox("Bloom", &m_applyBloom);
-		ImGui::Checkbox("Lock Input", &m_lockInput);
-
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-		ImGui::Text("Sample: %d", m_camera->GetSampleNumber());
-		ImGui::End();
+		std::cout << "has changed" << std::endl;
+		m_camera->SetHasChanged(true);
 	}
-
-	m_windowRenderer->SetBloom(m_applyBloom);
+	
+	m_camera->SetDataFromUI(m_uiData);
+	m_camera->Update(m_world, m_imageBuffer, m_windowInfo);
+	m_windowRenderer->SetBloom(m_uiData.nonCritical.bloom);
 }
 
 void Application::Render()
 {
 	m_windowRenderer->Render(m_imageBuffer, m_windowInfo);
-	ImGuiIO& io = ImGui::GetIO();
-	ImGui::Render();
-	SDL_RenderSetScale(m_renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+	m_ui->Render();
 	SDL_RenderPresent(m_renderer);
 }

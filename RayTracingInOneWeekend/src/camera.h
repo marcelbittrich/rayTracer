@@ -10,6 +10,8 @@
 #include "tools/windowInfo.h"
 #include "tools/color.h"
 
+#include "ui/uidata.h"
+
 class Camera
 {
 public:
@@ -18,14 +20,18 @@ public:
 	void HandleInput(const Input& input, double deltaTime);
 	void Update(const HittableList& world, color* imageBuffer, const WindowInfo& windowInfo);
 
+	void GetDataForUI(UIData& uiData) const;
+	int GetSampleNumber() const { return m_sampleCount; }
 	point3 GetPosition() const { return m_position; }
 	vec3 GetRotation() const{ return m_rotation; }
-	int GetSampleNumber() const { return m_sampleCount; }
+	
+	void SetDataFromUI(const UIData& uiData);
+	void SetHasChanged(bool value) { m_hasChanged = value; }
 
 private:
 	const bool m_hasFocusBlur = true;
 	int    m_maxBounce     = 10;
-	double hfov            = 60.0;
+	double m_hfov          = 60.0;
 	double m_focusDistance = 5.0;
 	double m_defocusAngle  = 1.5;
 	double m_backgroundBrightness = 0.1;

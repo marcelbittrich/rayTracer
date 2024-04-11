@@ -3,15 +3,19 @@
 #include <memory>
 #include <array>
 
-#include "tools/windowInfo.h"
-#include "camera.h"
-#include "sdlwindowrenderer.h"
-#include "input/input.h"
-
 #include "imgui.h"
 #include "imgui_impl_sdlrenderer2.h"
 #include "imgui_impl_sdl2.h"
 #include <stdio.h>
+
+#include "tools/windowInfo.h"
+#include "camera.h"
+#include "sdlwindowrenderer.h"
+#include "input/input.h"
+#include "ui/ui.h"
+#include "ui/uidata.h"
+
+#include <functional>
 
 class Application
 {
@@ -33,6 +37,7 @@ private:
 
 	WindowInfo m_windowInfo;
 	color* m_imageBuffer = nullptr;
+	std::unique_ptr<UI> m_ui = nullptr;
 	std::unique_ptr<Camera> m_camera = nullptr;
 	std::unique_ptr<SDLWindowRenderer> m_windowRenderer = nullptr;
 	HittableList m_world;
@@ -40,10 +45,8 @@ private:
 	SDL_Renderer* m_renderer;
 	Input m_input;
 
-	bool m_showGuiDemo = true;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	bool m_applyBloom = false;
-	bool m_lockInput = false;
+	UIData m_uiData;
+	size_t m_uiDataHash;
 
 	void SetWorld();
 	void AddRandomSpheres(HittableList& world);

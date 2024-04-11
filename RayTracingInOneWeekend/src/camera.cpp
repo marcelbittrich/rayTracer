@@ -30,7 +30,7 @@ void Camera::RecalculateViewport(const WindowInfo& windowInfo)
 #endif
 
 	// Calculation of the vieport local to camera
-	double theta = degreesToRadians(hfov);
+	double theta = degreesToRadians(m_hfov);
 	double h = tan(theta / 2);
 
 	m_viewportWidth = 2 * h * m_focusDistance;
@@ -116,6 +116,28 @@ void Camera::Update(const HittableList& world, color* imageBuffer, const WindowI
 		}
 	}
 #endif
+}
+
+void Camera::GetDataForUI(UIData& uiData) const
+{
+	uiData.nonCritical.sample = m_sampleCount;
+
+	uiData.critical.camPosition = m_position;
+	uiData.critical.camRotation = m_rotation;
+	uiData.critical.rayBounces = m_maxBounce;
+	uiData.critical.backgroundBrightness = m_backgroundBrightness;
+	uiData.critical.hfov = m_hfov;
+	uiData.critical.defocusAngle = m_defocusAngle;
+}
+
+void Camera::SetDataFromUI(const UIData& uiData)
+{
+	m_maxBounce = uiData.critical.rayBounces;
+	m_position = uiData.critical.camPosition;
+	m_rotation = uiData.critical.camRotation;
+	m_backgroundBrightness = uiData.critical.backgroundBrightness;
+	m_hfov = uiData.critical.hfov;
+	m_defocusAngle = uiData.critical.defocusAngle;
 }
 
 double Camera::GetFocusDistanceOnClick(const HittableList& world) const
