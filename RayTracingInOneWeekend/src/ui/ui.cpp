@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string>
 
+#include "../tools/color.h"
+#include "../objects/material.h"
+
 #include "SDL_render.h"
 
 UI::UI(SDL_Window* window, SDL_Renderer* renderer)
@@ -176,6 +179,19 @@ void UI::Update(UIData& data, HittableList& world)
 						if (ImGui::DragFloat("Radius", &objectRadius, 0.1f, 0.01f, 100.f))
 						{
 							object.m_radius = objectRadius;
+							hasWorldChanged = true;
+						};
+					}
+
+					{
+						color currentColor = object.m_material->GetColor();
+						float color[3] = { (float)currentColor.x(), (float)currentColor.y(), (float)currentColor.z() };
+						if (ImGui::ColorEdit3("Color", color))
+						{
+							currentColor[0] = (double)color[0];
+							currentColor[1] = (double)color[1];
+							currentColor[2] = (double)color[2];
+							object.m_material->SetColor(currentColor);
 							hasWorldChanged = true;
 						};
 					}

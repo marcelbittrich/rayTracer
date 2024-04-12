@@ -16,6 +16,8 @@ public:
 	{
 		return color(0.0, 0.0, 0.0);
 	}
+	virtual color GetColor() = 0;
+	virtual void SetColor(color newColor) = 0;
 };
 
 class Lambertian : public Material
@@ -24,6 +26,8 @@ public:
 	Lambertian(const color& albedo) : m_albedo(albedo) {}
 
 	bool Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const override;
+	color GetColor() override { return m_albedo; };
+	void SetColor(color newColor) override { m_albedo = newColor; };
 
 private:
 	color m_albedo;
@@ -36,6 +40,8 @@ public:
 		: m_albedo(albedo), m_fuzz(fuzz < 1 ? fuzz : 1) {}
 
 	bool Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const override;
+	color GetColor() override { return m_albedo; };
+	void SetColor(color newColor) override { m_albedo = newColor; };
 
 private:
 	color m_albedo;
@@ -49,6 +55,8 @@ public:
 		: m_albedo(albedo), m_refractionIndex(refrectionIndex){}
 
 	bool Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const override;
+	color GetColor() override { return m_albedo; };
+	void SetColor(color newColor) override { m_albedo = newColor; };
 
 private:
 	color m_albedo;
@@ -71,6 +79,9 @@ public:
 	{
 		return m_lightColor * m_brightness;
 	}
+
+	color GetColor() override { return m_lightColor; };
+	void SetColor(color newColor) override { m_lightColor = newColor; };
 
 private:
 	color m_lightColor;
