@@ -18,10 +18,10 @@ bool Lambertian::Scatter(const Ray& ray, const HitRecord& rec, color& attenuatio
 
 bool Metal::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const
 {
-    vec3 reflected = reflect(ray.direction(), rec.normal);
+    vec3 reflected = reflect(ray.Direction(), rec.normal);
     scattered = Ray(rec.p, reflected + m_fuzz * fastRandomUnitVector());
     attenuation = m_albedo;
-    return (dot(scattered.direction(), rec.normal) > 0);
+    return (dot(scattered.Direction(), rec.normal) > 0);
 }
 
 bool Dielectric::Scatter(const Ray& ray, const HitRecord& rec, color& attenuation, Ray& scattered) const
@@ -29,7 +29,7 @@ bool Dielectric::Scatter(const Ray& ray, const HitRecord& rec, color& attenuatio
     attenuation = m_albedo;
     double refractionRatio = rec.frontFace ? (1.0 / m_refractionIndex) : m_refractionIndex;
 
-    vec3 unitDirection = unitVector(ray.direction());
+    vec3 unitDirection = unitVector(ray.Direction());
 
     double cosTheta = fmin(dot(-unitDirection, rec.normal), 1.0);
     double sinTheta = sqrt(1.0 - cosTheta * cosTheta);

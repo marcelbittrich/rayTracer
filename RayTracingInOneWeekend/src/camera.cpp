@@ -231,7 +231,7 @@ color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world)
 	if (!world.Hit(ray, Interval(0.001, infinity), rec))
 	{
 		// Color background with gradient if not hit.
-		vec3 unitdirection = unitVector(ray.direction());
+		vec3 unitdirection = unitVector(ray.Direction());
 		double a = 0.5 * (unitdirection.y() + 1.0);
 		color startcolor = { 1.0, 0.3, 0.0 };
 		color endcolor = { 1.0, 1.0, 1.0 };

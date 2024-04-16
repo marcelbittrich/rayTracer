@@ -2,6 +2,7 @@
 
 #include "../tools/ray.h"
 #include "../tools/interval.h"
+#include "../tools/aabb.h"
 
 class Material;
 
@@ -19,7 +20,7 @@ struct HitRecord
 		// Sets hit record normal vector.
 		// NOTE: the parameter outward_normal is assumend to have unit length.
 	
-		frontFace = dot(ray.direction(), outwardNormal) < 0;
+		frontFace = dot(ray.Direction(), outwardNormal) < 0;
 		normal = frontFace ? outwardNormal : -outwardNormal;
 	}
 };
@@ -29,4 +30,5 @@ class Hittable
 public:
 	virtual ~Hittable() = default;
 	virtual bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const = 0;
+	virtual AABB BoundingBox() const = 0;
 };

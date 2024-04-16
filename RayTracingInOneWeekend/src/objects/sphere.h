@@ -7,13 +7,17 @@ class Sphere : public Hittable
 {
 public:
 	Sphere(point3 center, double radius, shared_ptr<Material> material) 
-		: m_center(center), m_radius(radius), m_material(material){}
+		: m_center(center), m_radius(fmax(0.0,radius)), m_material(material)
+	{
+		vec3 radiusVector(radius, radius, radius);
+		bbox = AABB(center - radiusVector, center + radiusVector);
+	}
 
 	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
 	{
-		vec3 oc = ray.origin() - m_center;
-		double a = ray.direction().length_squared();
-		double half_b = dot(oc, ray.direction());
+		vec3 oc = ray.Origin() - m_center;
+		double a = ray.Direction().length_squared();
+		double half_b = dot(oc, ray.Direction());
 		double c = oc.length_squared() - m_radius * m_radius;
 		double discriminant = half_b * half_b - a * c;
 
@@ -37,7 +41,7 @@ public:
 		}
 
 		rec.t = root;
-		rec.p = ray.at(rec.t);
+		rec.p = ray.At(rec.t);
 		rec.objectCenter = m_center;
 		vec3 outwardNormal = (rec.p - m_center) / m_radius;
 		rec.SetFaceNormal(ray, outwardNormal);
@@ -46,8 +50,11 @@ public:
 		return true;
 	}
 
+	AABB BoundingBox() const override { return bbox; };
+
 	point3 m_center;
 	double m_radius;
 	shared_ptr<Material> m_material;
 private:
+	AABB bbox;
 };

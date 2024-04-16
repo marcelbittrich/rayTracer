@@ -4,6 +4,7 @@
 
 #include "SDL.h"
 
+#include "objects/bvh.h"
 #include "objects/sphere.h"
 #include "objects/material.h"
 #include "tools/color.h"
@@ -33,6 +34,8 @@ Application::Application()
 	m_imageBuffer = new color[m_windowInfo.width * m_windowInfo.height];
 
 	SetWorld();
+
+	m_world = HittableList(make_shared<BVH_Node>(m_world));
 }
 
 void Application::SetWorld()
@@ -47,14 +50,24 @@ void Application::SetWorld()
 
 	auto lightMaterial = make_shared<DiffuseLight>(color(1, 1, 1), 3.0);
 
-	m_world.addSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
-	m_world.addSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
-	m_world.addSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
-	m_world.addSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
+	//m_world.AddSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
+	//m_world.AddSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
+	//m_world.AddSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
+	//m_world.AddSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
 
-	m_world.addSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
+	//m_world.AddSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
 
-	m_world.addSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
+	//m_world.AddSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
+
+
+	m_world.Add(make_shared<Sphere>(point3(2, 0, -5), 1.5, materialRight));
+	m_world.Add(make_shared<Sphere>(point3(0, 0, -1), 0.5, materialCenter));
+	m_world.Add(make_shared<Sphere>(point3(-3, 0.5, -3), 1.0, materialLeft));
+	m_world.Add(make_shared<Sphere>(point3(0, -1000.5, -1), 1000, materialGround));
+
+	m_world.Add(make_shared<Sphere>(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
+
+	m_world.Add(make_shared<Sphere>(point3(0, 3, -2), 1.0, lightMaterial));
 
 	if(m_hasRandomSpheres)
 		AddRandomSpheres(m_world);
@@ -80,17 +93,17 @@ void Application::AddRandomSpheres(HittableList& world)
 			if (materialSelector == 0)
 			{
 				auto labertian = make_shared<Lambertian>(sphereColor);
-				m_world.addSphere(Sphere(point3(x, y, z), 0.1, labertian));
+				m_world.Add(make_shared<Sphere>(point3(x, y, z), 0.1, labertian));
 			}
 			else if (materialSelector == 1)
 			{
 				auto metal = make_shared<Metal>(sphereColor, fastRandomDouble(0.0, 1.0));
-				m_world.addSphere(Sphere(point3(x, y, z), 0.1, metal));
+				m_world.Add(make_shared<Sphere>(point3(x, y, z), 0.1, metal));
 			}
 			else if (materialSelector == 2)
 			{
 				auto glass = make_shared<Dielectric>(sphereColor, fastRandomDouble(1.3, 2.4));
-				m_world.addSphere(Sphere(point3(x, y, z), 0.1, glass));
+				m_world.Add(make_shared<Sphere>(point3(x, y, z), 0.1, glass));
 			}
 		}
 	}

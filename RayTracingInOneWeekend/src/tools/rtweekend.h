@@ -47,9 +47,13 @@ inline double randomDouble()
 	return (double)rand() / RAND_MAX;
 }
 
-
 inline double randomDouble(double min, double max)
 {
 	// Returns a random real in [min,max).
 	return min + (max - min) * randomDouble();
+}
+
+inline int randomInt(int min, int max)
+{
+	return (int)fastRandomDouble(min, max + 1);
 }

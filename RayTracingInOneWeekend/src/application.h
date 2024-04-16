@@ -27,7 +27,7 @@ public:
 	bool IsRunning() const { return m_running; }
 
 private:
-	bool   m_hasRandomSpheres = false;
+	bool   m_hasRandomSpheres = true;
 	bool   m_running = true;
 	double m_aspectRatio = 16.0 / 9.0;
 	int    m_windowWidth = 1000;

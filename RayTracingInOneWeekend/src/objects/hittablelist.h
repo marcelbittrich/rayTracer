@@ -2,6 +2,7 @@
 
 #include "hittable.h"
 #include "sphere.h"
+#include "../tools/aabb.h"
 
 #include <memory>
 #include <vector>
@@ -15,12 +16,20 @@ public:
 	std::vector<Sphere> m_spheres;
 
 	HittableList() {}
-	HittableList(shared_ptr<Hittable> object) { add(object); }
+	HittableList(shared_ptr<Hittable> object) { Add(object); }
 
-	void clear() { objects.clear(); }
-	void add(shared_ptr<Hittable> object) { objects.push_back(object); }
+	void Clear() { objects.clear(); }
+	void Add(shared_ptr<Hittable> object) 
+	{ 
+		objects.push_back(object); 
+		bbox = AABB(bbox, object->BoundingBox());
+	}
 
-	void addSphere(Sphere sphereToAdd) { m_spheres.push_back(sphereToAdd); }
+	void AddSphere(Sphere sphereToAdd) 
+	{ 
+		m_spheres.push_back(sphereToAdd);
+		bbox = AABB(bbox, sphereToAdd.BoundingBox());
+	}
 
 	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
 	{
@@ -28,28 +37,20 @@ public:
 		bool hitAnything = false;
 		double closestSoFar = rayT.max;
 
-		// TODO: Compare performance before deletion
-		// Old approach with list of pointers
-		//for (const shared_ptr<Hittable>& object : objects)
-		//{
-		//	if (object->Hit(ray, Interval(rayT.min, closestSoFar), tempRec))
-		//	{
-		//		hitAnything = true;
-		//		closestSoFar = tempRec.t;
-		//		rec = tempRec;
-		//	}
-		//}
-
-		for (const Sphere& sphere : m_spheres)
+		for (const shared_ptr<Hittable>& object : objects)
 		{
-			if (sphere.Hit(ray, Interval(rayT.min, closestSoFar), tempRec))
+			if (object->Hit(ray, Interval(rayT.min, closestSoFar), tempRec))
 			{
 				hitAnything = true;
 				closestSoFar = tempRec.t;
 				rec = tempRec;
 			}
 		}
-
 		return hitAnything;
 	}
+
+	AABB BoundingBox() const override { return bbox; }
+
+private:
+	AABB bbox;
 };

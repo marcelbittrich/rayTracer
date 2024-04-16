@@ -156,48 +156,53 @@ void UI::Update(UIData& data, HittableList& world)
 			bool& hasWorldChanged = uiData.critical.hasWorldChanged;
 			hasWorldChanged = false;
 			int sphereIndex = 0;
-			for (Sphere& object : world.m_spheres)
+			for (const auto& objectPtr : world.objects)
 			{
-				sphereIndex++;
-				std::string name = "Sphere " + std::to_string(sphereIndex);
-				if (ImGui::TreeNode(name.c_str()))
+				if (auto spherePtr = std::dynamic_pointer_cast<Sphere>(objectPtr))
 				{
+					Sphere& object = *spherePtr.get();
+					sphereIndex++;
+					std::string name = "Sphere " + std::to_string(sphereIndex);
+					if (ImGui::TreeNode(name.c_str()))
 					{
-						vec3& objectPos = object.m_center;
-						float vec[3] = { (float)objectPos.x(), (float)objectPos.y(), (float)objectPos.z() };
-						if (ImGui::InputFloat3("Position", vec))
 						{
-							objectPos[0] = (double)vec[0];
-							objectPos[1] = (double)vec[1];
-							objectPos[2] = (double)vec[2];
-							hasWorldChanged = true;
-						};
-					}
+							vec3& objectPos = object.m_center;
+							float vec[3] = { (float)objectPos.x(), (float)objectPos.y(), (float)objectPos.z() };
+							if (ImGui::InputFloat3("Position", vec))
+							{
+								objectPos[0] = (double)vec[0];
+								objectPos[1] = (double)vec[1];
+								objectPos[2] = (double)vec[2];
+								hasWorldChanged = true;
+							};
+						}
 
-					{
-						float objectRadius = (float)object.m_radius;
-						if (ImGui::DragFloat("Radius", &objectRadius, 0.1f, 0.01f, 100.f))
 						{
-							object.m_radius = objectRadius;
-							hasWorldChanged = true;
-						};
-					}
+							float objectRadius = (float)object.m_radius;
+							if (ImGui::DragFloat("Radius", &objectRadius, 0.1f, 0.01f, 100.f))
+							{
+								object.m_radius = objectRadius;
+								hasWorldChanged = true;
+							};
+						}
 
-					{
-						color currentColor = object.m_material->GetColor();
-						float color[3] = { (float)currentColor.x(), (float)currentColor.y(), (float)currentColor.z() };
-						if (ImGui::ColorEdit3("Color", color))
 						{
-							currentColor[0] = (double)color[0];
-							currentColor[1] = (double)color[1];
-							currentColor[2] = (double)color[2];
-							object.m_material->SetColor(currentColor);
-							hasWorldChanged = true;
-						};
-					}
+							color currentColor = object.m_material->GetColor();
+							float color[3] = { (float)currentColor.x(), (float)currentColor.y(), (float)currentColor.z() };
+							if (ImGui::ColorEdit3("Color", color))
+							{
+								currentColor[0] = (double)color[0];
+								currentColor[1] = (double)color[1];
+								currentColor[2] = (double)color[2];
+								object.m_material->SetColor(currentColor);
+								hasWorldChanged = true;
+							};
+						}
 
-					ImGui::TreePop();
-				};
+						ImGui::TreePop();
+					};
+
+				}
 			}
 		}
 		ImGui::End();
