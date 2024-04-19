@@ -63,11 +63,27 @@ public:
 		return hitLeft || hitRight;
 	}
 
+	int GetLeafCount() const
+	{
+		int sum = 0;
+		if (auto node = std::dynamic_pointer_cast<BVH_Node>(left))
+			sum += node->GetLeafCount();
+		else
+			sum++;
+
+		if (auto node = std::dynamic_pointer_cast<BVH_Node>(right))
+			sum += node->GetLeafCount();
+		else	
+			sum++;
+
+		return sum;
+	}
+
 	AABB BoundingBox() const override { return bbox; }
 
-private:
 	shared_ptr<Hittable> left;
 	shared_ptr<Hittable> right;
+private:
 	AABB bbox;
 
 	static bool BoxCompare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b, int axisIndex)

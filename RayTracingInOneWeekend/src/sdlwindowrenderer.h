@@ -17,6 +17,7 @@ public:
 	void Render(color imageBuffer[], const WindowInfo& windowInfo);
 
 	void SetBloom(bool value) { m_bloom = value; }
+	SDL_Surface* GetImageSurface() const { return m_imageSurface; }
 
 private:
 	bool m_bloom = false;
@@ -24,6 +25,7 @@ private:
 	const float m_bloomIntensity = 1.5f;
 	const float m_eulerNumber = 2.71828182845904523536f;
 	SDL_Renderer* m_renderer = nullptr;
+	SDL_Surface* m_imageSurface = nullptr;
 	color* m_rawImageBuffer = nullptr;
 	color* m_finalFrameBuffer = nullptr;
 	color* m_bloomBuffer;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../tools/vec3.h"
+#include "../export/exporter.h"
 
 struct criticalData
 {
@@ -31,6 +32,11 @@ struct nonCriticalData
 
 	// Analytics
 	int sample = 0;
+
+	// Export Image
+	bool exportImage = false;
+	ExportFormat exportImageFormat = ExportFormat::PNG;
+	int exportImageQuality = 100;
 };
 
 struct UIData

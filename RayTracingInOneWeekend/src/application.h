@@ -14,6 +14,7 @@
 #include "input/input.h"
 #include "ui/ui.h"
 #include "ui/uidata.h"
+#include "export/exporter.h"
 
 #include <functional>
 
@@ -40,6 +41,7 @@ private:
 	std::unique_ptr<UI> m_ui = nullptr;
 	std::unique_ptr<Camera> m_camera = nullptr;
 	std::unique_ptr<SDLWindowRenderer> m_windowRenderer = nullptr;
+	std::unique_ptr<Exporter> m_exporter = nullptr;
 	HittableList m_world;
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;

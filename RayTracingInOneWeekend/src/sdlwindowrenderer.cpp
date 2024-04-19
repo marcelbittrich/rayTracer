@@ -56,9 +56,7 @@ SDLWindowRenderer::~SDLWindowRenderer()
 void SDLWindowRenderer::Render(color imageBuffer[], const WindowInfo& windowInfo)
 {
 	if (windowInfo.hasChanged)
-	{
 		OnWindowChange(windowInfo);
-	}
 
 	m_rawImageBuffer = imageBuffer;
 	m_finalFrameBuffer = m_bloom ? AddBloom(m_rawImageBuffer, windowInfo) : m_rawImageBuffer;
@@ -67,8 +65,12 @@ void SDLWindowRenderer::Render(color imageBuffer[], const WindowInfo& windowInfo
 	SDL_RenderClear(m_renderer);
 	const int windowWidth = windowInfo.width;
 	const int windowHeight = windowInfo.height;
-	SDL_Surface* surface = SDL_CreateRGBSurface(0, windowInfo.width, windowInfo.height, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
-	SDL_memset(surface->pixels, 0, surface->h * surface->pitch);
+
+	if (m_imageSurface != nullptr)
+		SDL_FreeSurface(m_imageSurface);
+
+	m_imageSurface = SDL_CreateRGBSurface(0, windowInfo.width, windowInfo.height, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+	SDL_memset(m_imageSurface->pixels, 0, m_imageSurface->h * m_imageSurface->pitch);
 
 	for (int j = 0; j < windowHeight; j++)
 	{
@@ -85,14 +87,14 @@ void SDLWindowRenderer::Render(color imageBuffer[], const WindowInfo& windowInfo
 			uint8_t b = (uint8_t)(255.999 * bd);
 			uint8_t a = (uint8_t)255;
 
-			Uint32 localColor = SDL_MapRGBA(surface->format, r, g, b, a);
-			SetPixel(surface, i, j, localColor);
+			Uint32 localColor = SDL_MapRGBA(m_imageSurface->format, r, g, b, a);
+			SetPixel(m_imageSurface, i, j, localColor);
 		}
 	}
 
 	// Set sampling to nearest pixel
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-	SDL_FreeSurface(surface);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_renderer, m_imageSurface);
+	
 	SDL_Rect imageRect = { 0, 0, windowWidth, windowHeight };
 	SDL_RenderCopy(m_renderer, texture, &imageRect, &imageRect);
 

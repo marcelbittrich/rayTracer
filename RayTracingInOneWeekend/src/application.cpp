@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include "SDL.h"
+#include "SDL_image.h"
 
 #include "objects/bvh.h"
 #include "objects/sphere.h"
@@ -27,15 +28,28 @@ Application::Application()
 	Uint32 flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 	m_renderer = SDL_CreateRenderer(m_window, -1, flags);
 
+	int IMGflags = IMG_INIT_JPG | IMG_INIT_PNG;
+	IMG_Init(IMGflags);
+
 	m_ui = std::make_unique<UI>(m_window, m_renderer);
 	m_camera = std::make_unique<Camera>(m_windowInfo);
 	m_windowRenderer = std::make_unique<SDLWindowRenderer>(m_renderer, m_windowInfo);
+	m_exporter = std::make_unique<Exporter>();
 
 	m_imageBuffer = new color[m_windowInfo.width * m_windowInfo.height];
 
 	SetWorld();
 
 	m_world = HittableList(make_shared<BVH_Node>(m_world));
+
+	if (auto rootNode = std::dynamic_pointer_cast<BVH_Node>(m_world.objects.front()))
+	{
+		std::cout << "Root Node Leaf Count: " << rootNode->GetLeafCount() << std::endl;
+		int leftSum = ((BVH_Node*)rootNode->left.get())->GetLeafCount();
+		int rightSum = ((BVH_Node*)rootNode->right.get())->GetLeafCount();
+		std::cout << "Left Node Leaf Count: " << leftSum << std::endl;
+		std::cout << "Right Node Leaf Count: " << rightSum << std::endl;
+	}
 }
 
 void Application::SetWorld()
@@ -75,7 +89,7 @@ void Application::SetWorld()
 
 void Application::AddRandomSpheres(HittableList& world)
 {
-	int count = 5;
+	int count = 7;
 	double size = 0.1;
 	double distance = 4;
 
@@ -113,6 +127,7 @@ Application::~Application()
 {
 	delete[] m_imageBuffer;
 
+	IMG_Quit();
 	SDL_DestroyWindow(m_window);
 	SDL_DestroyRenderer(m_renderer);
 	SDL_Quit();
@@ -191,4 +206,16 @@ void Application::Render()
 	m_windowRenderer->Render(m_imageBuffer, m_windowInfo);
 	m_ui->Render();
 	SDL_RenderPresent(m_renderer);
+
+	if (m_uiData.nonCritical.exportImage)
+	{
+		ExportInfo info;
+		info.imageSurface = m_windowRenderer->GetImageSurface();
+		info.fileName = "Default";
+		info.filePath = "../img/";
+		info.format = m_uiData.nonCritical.exportImageFormat;
+		info.quality = m_uiData.nonCritical.exportImageQuality;
+
+		m_exporter->ExportImage(info);
+	}
 }

@@ -209,11 +209,31 @@ void UI::Update(UIData& data, HittableList& world)
 
 		ImGui::Begin("Export");
 		{
-			if (ImGui::Button("Export Image"))
+			static int currentFormat = (int)ExportFormat::PNG;
+			const int exportFormatCount = (int)ExportFormat::ELEMENT_COUNT;
+			const char* exportFormatNames[exportFormatCount] = { "PNG" , "JPG" };
+			const char* exportFormatName = 
+				(currentFormat >= 0 && currentFormat < exportFormatCount) ? 
+				exportFormatNames[currentFormat] : "Unknown";
+
+			if (ImGui::SliderInt("Export Format", &currentFormat, 0, exportFormatCount - 1, exportFormatName))
 			{
-				//TODO
-				std::cout << "Export Image Pressed" << std::endl;
+				uiData.nonCritical.exportImageFormat = (ExportFormat)currentFormat;
 			}
+
+			if (currentFormat == (int)ExportFormat::JPG)
+			{
+				int jpgQuality = uiData.nonCritical.exportImageQuality;
+				if (ImGui::InputInt("JPG Quality", &jpgQuality))
+				{
+					if (jpgQuality > 0 && jpgQuality <= 100)
+					{
+						uiData.nonCritical.exportImageQuality = jpgQuality;
+					}
+				}
+			}
+
+			uiData.nonCritical.exportImage = ImGui::Button("Export Image");
 		}
 		ImGui::End();
 	}
