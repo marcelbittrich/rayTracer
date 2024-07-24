@@ -10,8 +10,8 @@ public:
 	Triangle(std::array<vec3, 3> points, shared_ptr<Material> material) : m_points(points), m_material(material)
 	{
 		const AABB bboxAB = AABB(points[0], points[1]);
-		const AABB bboxBC = AABB(points[1], points[2]);
-		bbox = AABB(bboxAB, bboxBC);
+		const AABB bboxAC = AABB(points[0], points[2]);
+		bbox = AABB(bboxAB, bboxAC);
 	};
 
 	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override;

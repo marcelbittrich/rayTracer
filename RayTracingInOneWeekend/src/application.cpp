@@ -75,30 +75,28 @@ void Application::SetWorld()
 	m_world.AddSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
 
 	// Vertex array
-	double vertices[] = {
-		0.0,  3.0,  0.0,  // Top front vertex
-		1.0,  2.0,  0.0,  // Right front vertex
-		0.0,  1.0,  0.0,  // Bottom front vertex
-	   -1.0,  2.0,  0.0,  // Left front vertex
-		0.0,  2.0,  1.0,  // Top back vertex
-		0.0,  2.0, -1.0   // Bottom back vertex
+	std::vector<double> vertices = {
+		 0.0,  1.0,  0.0,  // Left vertex
+		 2.0,  1.0,  0.0,  // Right vertex
+		 1.0,  2.0,  0.0,  // Top vertex
+		 1.0,  0.0,  0.0,  // Bottom vertex
+		 1.0,  1.0,  1.0,  // Front vertex
+		 1.0,  1.0, -1.0   // Back vertex
 	};
 
 	// Index array
-	unsigned int indices[] = {
-		0, 1, 4,  // Top front, Right front, Top back
-		1, 2, 4,  // Right front, Bottom front, Top back
-		2, 3, 4,  // Bottom front, Left front, Top back
-		3, 0, 4,  // Left front, Top front, Top back
-		0, 1, 5,  // Top front, Right front, Bottom back
-		1, 2, 5,  // Right front, Bottom front, Bottom back
-		2, 3, 5,  // Bottom front, Left front, Bottom back
-		3, 0, 5   // Left front, Top front, Bottom back
+	std::vector<unsigned int> indices = {
+		0, 4, 2,  // Left, Front, Top
+		1, 2, 4,  // Right, Top, Front
+		1, 4, 3,  // Right, Front, Bottom
+		0, 3, 4,  // Left, Bottom, Front
+		0, 2, 5,  // Left, Top, Back
+		1, 5, 2,  // Right, Back, Top
+		1, 3, 5,  // Right, Bottom, Back
+		0, 5, 3   // Left, Back, Bottom
 	};
 
-	//std::vector<Triangle> triangles;
-
-	for (int i = 0; i < 24; i += 3) {
+	for (int i = 0; i < indices.size(); i += 3) {
 		vec3 p1 = { vertices[3 * indices[i]], vertices[3 * indices[i] + 1], vertices[3 * indices[i] + 2] };
 		vec3 p2 = { vertices[3 * indices[i + 1]], vertices[3 * indices[i + 1] + 1], vertices[3 * indices[i + 1] + 2] };
 		vec3 p3 = { vertices[3 * indices[i + 2]], vertices[3 * indices[i + 2] + 1], vertices[3 * indices[i + 2] + 2] };
