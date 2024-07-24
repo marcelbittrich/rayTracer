@@ -28,7 +28,7 @@ public:
 	bool IsRunning() const { return m_running; }
 
 private:
-	bool   m_hasRandomSpheres = true;
+	const bool   m_hasRandomSpheres = true;
 	bool   m_running = true;
 	double m_aspectRatio = 16.0 / 9.0;
 	int    m_windowWidth = 1000;
@@ -42,7 +42,7 @@ private:
 	std::unique_ptr<Camera> m_camera = nullptr;
 	std::unique_ptr<SDLWindowRenderer> m_windowRenderer = nullptr;
 	std::unique_ptr<Exporter> m_exporter = nullptr;
-	HittableList m_world;
+	Scene m_world;
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
 	Input m_input;
@@ -51,7 +51,7 @@ private:
 	size_t m_uiDataHash;
 
 	void SetWorld();
-	void AddRandomSpheres(HittableList& world);
+	void AddRandomSpheres(Scene& world);
 	void HandleEvents();
 	void Update();
 	void Render();

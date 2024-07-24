@@ -1,56 +1,80 @@
 #pragma once
 
+#include "bvh.h"
 #include "hittable.h"
 #include "sphere.h"
 #include "../tools/aabb.h"
 
-#include <memory>
 #include <vector>
 
-using std::shared_ptr;
-
-class HittableList : public Hittable
+class Scene
 {
 public:
-	std::vector<shared_ptr<Hittable>> objects;
-	std::vector<Sphere> m_spheres;
-
-	HittableList() {}
-	HittableList(shared_ptr<Hittable> object) { Add(object); }
-
-	void Clear() { objects.clear(); }
-	void Add(shared_ptr<Hittable> object) 
-	{ 
-		objects.push_back(object); 
-		bbox = AABB(bbox, object->BoundingBox());
-	}
+	
+	Scene() {};
 
 	void AddSphere(Sphere sphereToAdd) 
 	{ 
 		m_spheres.push_back(sphereToAdd);
-		bbox = AABB(bbox, sphereToAdd.BoundingBox());
+		ResetPointersToAllObjects();
 	}
 
-	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
+	void ResetPointersToAllObjects()
+	{
+		m_objects.clear();
+		for (int i = 0; i < m_spheres.size(); i++) 
+		{
+			m_objects.push_back(&m_spheres[i]);
+		}
+	}
+
+	void SetupBVH()
+	{
+		ResetPointersToAllObjects();
+		m_rootNode = new BVH_Node(this);
+		m_hasBVH = true;
+	}
+
+	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const
 	{
 		HitRecord tempRec;
 		bool hitAnything = false;
 		double closestSoFar = rayT.max;
 
-		for (const shared_ptr<Hittable>& object : objects)
+		if (m_hasBVH)
 		{
-			if (object->Hit(ray, Interval(rayT.min, closestSoFar), tempRec))
+			if (m_rootNode->Hit(ray, Interval(rayT.min, closestSoFar), tempRec))
 			{
 				hitAnything = true;
 				closestSoFar = tempRec.t;
 				rec = tempRec;
 			}
 		}
+		else
+		{
+			for (const Hittable* object : m_objects)
+			{
+				if (object->Hit(ray, Interval(rayT.min, closestSoFar), tempRec))
+				{
+					hitAnything = true;
+					closestSoFar = tempRec.t;
+					rec = tempRec;
+				}
+			}
+		}
+
 		return hitAnything;
 	}
 
-	AABB BoundingBox() const override { return bbox; }
-
+	std::vector<Hittable*>& GetObjectPointers() 
+	{
+		ResetPointersToAllObjects();
+		return m_objects;
+	}
+public:
+	BVH_Node* m_rootNode = nullptr;
 private:
-	AABB bbox;
+	bool m_hasBVH = false;
+	std::vector<Sphere> m_spheres;
+	std::vector<Hittable*> m_objects;
 };

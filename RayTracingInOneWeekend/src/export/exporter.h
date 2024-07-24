@@ -14,10 +14,10 @@ enum class ExportFormat
 
 struct ExportInfo 
 {
+	ExportFormat format;
 	struct SDL_Surface* imageSurface;
 	std::string filePath;
 	std::string fileName;
-	ExportFormat format;
 	int quality; 
 };
 
@@ -28,8 +28,3 @@ public:
 	void ExportImage(ExportInfo Info);
 private:
 };
-
-static void ExoportNewStuff() 
-{
-	std::cout << "New Stuff" << std::endl;
-}

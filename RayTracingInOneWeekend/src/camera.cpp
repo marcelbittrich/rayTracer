@@ -73,7 +73,7 @@ void Camera::HandleInput(const Input& input, double deltaTime)
 	m_hasChanged = m_mover.UpdateTranform(m_position, m_rotation, input, deltaTime);
 }
 
-void Camera::Update(const HittableList& world, color* imageBuffer, const WindowInfo& windowInfo)
+void Camera::Update(const Scene& world, color* imageBuffer, const WindowInfo& windowInfo)
 {
 	m_currentWorld = &world;
 	m_currentWindowInfo = &windowInfo;
@@ -144,7 +144,7 @@ void Camera::SetDataFromUI(const UIData& uiData)
 	m_focusDistance = uiData.critical.focusDistance;
 }
 
-double Camera::GetFocusDistanceOnClick(const HittableList& world) const
+double Camera::GetFocusDistanceOnClick(const Scene& world) const
 {
 	int mouseX, mouseY;
 	SDL_GetMouseState(&mouseX, &mouseY);
@@ -220,7 +220,7 @@ vec3 Camera::DefocusDiskSample()
 	return m_position + p[0] * m_defocusDistanceU + p[1] * m_defocusDistanceV;
 }
 
-color Camera::RayColor(const Ray& ray, int bounce, const Hittable& world)
+color Camera::RayColor(const Ray& ray, int bounce, const Scene& world)
 {
 	if (bounce <= 0)
 	{

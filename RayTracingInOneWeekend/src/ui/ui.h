@@ -14,7 +14,7 @@ class UI
 public:
 	UI(SDL_Window* window, SDL_Renderer* renderer);
 	~UI();
-	void Update(UIData& data, HittableList& world);
+	void Update(UIData& data, Scene& world);
 	void Render();
 
 private:

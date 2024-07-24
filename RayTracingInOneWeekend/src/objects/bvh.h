@@ -7,14 +7,13 @@
 #include "../tools/aabb.h"
 #include "../tools/rtweekend.h"
 #include "hittable.h"
-#include "hittablelist.h"
 
 class BVH_Node : public Hittable
 {
 public:
-	BVH_Node(HittableList list) : BVH_Node(list.objects, 0, list.objects.size()) {}
+	BVH_Node(class Scene* list);
 
-	BVH_Node(std::vector<shared_ptr<Hittable>>& objects, size_t start, size_t end)
+	BVH_Node(std::vector<Hittable*>& objects, size_t start, size_t end)
 	{
 		bbox = AABB::empty;
 
@@ -45,8 +44,8 @@ public:
 			std::sort(objects.begin() + start, objects.begin() + end, comperator);
 
 			size_t mid = start + objectSpan / 2;
-			left = make_shared<BVH_Node>(objects, start, mid);
-			right = make_shared<BVH_Node>(objects, mid, end);
+			left = new BVH_Node(objects, start, mid);
+			right = new BVH_Node(objects, mid, end);
 		}
 	}
 
@@ -57,8 +56,8 @@ public:
 			return false;
 		}
 
-		bool hitLeft = left->Hit(ray, rayT, rec);
-		bool hitRight = right->Hit(ray, Interval(rayT.min, hitLeft ? rec.t : rayT.max), rec);
+		const bool hitLeft = left->Hit(ray, rayT, rec);
+		const bool hitRight = right->Hit(ray, Interval(rayT.min, hitLeft ? rec.t : rayT.max), rec);
 
 		return hitLeft || hitRight;
 	}
@@ -66,12 +65,13 @@ public:
 	int GetLeafCount() const
 	{
 		int sum = 0;
-		if (auto node = std::dynamic_pointer_cast<BVH_Node>(left))
+
+		if (auto node = dynamic_cast<BVH_Node*>(left))
 			sum += node->GetLeafCount();
 		else
 			sum++;
 
-		if (auto node = std::dynamic_pointer_cast<BVH_Node>(right))
+		if (auto node = dynamic_cast<BVH_Node*>(right))
 			sum += node->GetLeafCount();
 		else	
 			sum++;
@@ -81,27 +81,27 @@ public:
 
 	AABB BoundingBox() const override { return bbox; }
 
-	shared_ptr<Hittable> left;
-	shared_ptr<Hittable> right;
+	Hittable* left;
+	Hittable* right;
 private:
 	AABB bbox;
 
-	static bool BoxCompare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b, int axisIndex)
+	static bool BoxCompare(const Hittable* a, const Hittable* b, int axisIndex)
 	{
 		auto aAxisInterval = a->BoundingBox().AxisInterval(axisIndex);
 		auto bAxisInterval = b->BoundingBox().AxisInterval(axisIndex);
 		return aAxisInterval.min < bAxisInterval.min;
 	}
 
-	static bool BoxXCompare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b)
+	static bool BoxXCompare(const Hittable* a, const Hittable* b)
 	{
 		return BoxCompare(a, b, 0);
 	}
-	static bool BoxYCompare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b)
+	static bool BoxYCompare(const Hittable* a, const Hittable* b)
 	{
 		return BoxCompare(a, b, 1);
 	}
-	static bool BoxZCompare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b)
+	static bool BoxZCompare(const Hittable* a, const Hittable* b)
 	{
 		return BoxCompare(a, b, 2);
 	}

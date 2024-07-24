@@ -15,18 +15,18 @@ public:
 
 	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
 	{
-		vec3 oc = ray.Origin() - m_center;
-		double a = ray.Direction().length_squared();
-		double half_b = dot(oc, ray.Direction());
-		double c = oc.length_squared() - m_radius * m_radius;
-		double discriminant = half_b * half_b - a * c;
+		const vec3 oc = ray.Origin() - m_center;
+		const double a = ray.Direction().length_squared();
+		const double half_b = dot(oc, ray.Direction());
+		const double c = oc.length_squared() - m_radius * m_radius;
+		const double discriminant = half_b * half_b - a * c;
 
 		if (discriminant < 0)
 		{
 			return false;
 		}
 
-		double sqrtd = sqrt(discriminant);
+		const double sqrtd = sqrt(discriminant);
 		double root = (-half_b - sqrtd) / a;
 		
 		// If root is out of interval try with positive sqrtd.
@@ -43,7 +43,7 @@ public:
 		rec.t = root;
 		rec.p = ray.At(rec.t);
 		rec.objectCenter = m_center;
-		vec3 outwardNormal = (rec.p - m_center) / m_radius;
+		const vec3 outwardNormal = (rec.p - m_center) / m_radius;
 		rec.SetFaceNormal(ray, outwardNormal);
 		rec.material = m_material;
 

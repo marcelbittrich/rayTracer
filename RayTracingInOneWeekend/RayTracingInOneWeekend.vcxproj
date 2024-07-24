@@ -156,6 +156,7 @@ copy /Y "$(SolutionDir)dependencies\SDL2_image-2.8.2\lib\x64\SDL2_image.dll" "$(
     <ClCompile Include="imGUI\imgui_widgets.cpp" />
     <ClCompile Include="src\input\mover.cpp" />
     <ClCompile Include="src\input\input.cpp" />
+    <ClCompile Include="src\objects\bvh.cpp" />
     <ClCompile Include="src\objects\material.cpp" />
     <ClCompile Include="src\sdlwindowrenderer.cpp" />
     <ClCompile Include="src\camera.cpp" />

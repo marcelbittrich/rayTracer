@@ -18,7 +18,7 @@ public:
 	Camera(const WindowInfo& windowInfo);
 
 	void HandleInput(const Input& input, double deltaTime);
-	void Update(const HittableList& world, color* imageBuffer, const WindowInfo& windowInfo);
+	void Update(const Scene& world, color* imageBuffer, const WindowInfo& windowInfo);
 
 	void GetDataForUI(UIData& uiData) const;
 	int GetSampleNumber() const { return m_sampleCount; }
@@ -60,15 +60,15 @@ private:
 	};
 
 	std::vector<uint32_t> horizontalIter, verticalIter;
-	const HittableList* m_currentWorld = nullptr;
+	const Scene* m_currentWorld = nullptr;
 	const WindowInfo*	m_currentWindowInfo = nullptr;
 	color* m_ImageBuffer;
 
-	double GetFocusDistanceOnClick(const HittableList& world) const;
+	double GetFocusDistanceOnClick(const Scene& world) const;
 	void SetPixelColor(int x , int y);
 	void RecalculateViewport(const WindowInfo& windowInfo);
 	Ray GetRay(int i, int j);
 	vec3 PixelSampleSquare();
 	vec3 DefocusDiskSample();
-	color RayColor(const Ray& ray, int maxBounce, const Hittable& world);
+	color RayColor(const Ray& ray, int maxBounce, const Scene& world);
 };

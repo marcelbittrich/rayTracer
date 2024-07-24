@@ -40,13 +40,13 @@ Application::Application()
 
 	SetWorld();
 
-	m_world = HittableList(make_shared<BVH_Node>(m_world));
+	m_world.SetupBVH();
 
-	if (auto rootNode = std::dynamic_pointer_cast<BVH_Node>(m_world.objects.front()))
+	if (auto rootNode = m_world.m_rootNode)
 	{
 		std::cout << "Root Node Leaf Count: " << rootNode->GetLeafCount() << std::endl;
-		int leftSum = ((BVH_Node*)rootNode->left.get())->GetLeafCount();
-		int rightSum = ((BVH_Node*)rootNode->right.get())->GetLeafCount();
+		int leftSum = ((BVH_Node*)rootNode->left)->GetLeafCount();
+		int rightSum = ((BVH_Node*)rootNode->right)->GetLeafCount();
 		std::cout << "Left Node Leaf Count: " << leftSum << std::endl;
 		std::cout << "Right Node Leaf Count: " << rightSum << std::endl;
 	}
@@ -64,60 +64,49 @@ void Application::SetWorld()
 
 	auto lightMaterial = make_shared<DiffuseLight>(color(1, 1, 1), 3.0);
 
-	//m_world.AddSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
-	//m_world.AddSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
-	//m_world.AddSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
-	//m_world.AddSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
+	m_world.AddSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
+	m_world.AddSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
+	m_world.AddSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
+	m_world.AddSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
 
-	//m_world.AddSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
+	m_world.AddSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
 
-	//m_world.AddSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
-
-
-	m_world.Add(make_shared<Sphere>(point3(2, 0, -5), 1.5, materialRight));
-	m_world.Add(make_shared<Sphere>(point3(0, 0, -1), 0.5, materialCenter));
-	m_world.Add(make_shared<Sphere>(point3(-3, 0.5, -3), 1.0, materialLeft));
-	m_world.Add(make_shared<Sphere>(point3(0, -1000.5, -1), 1000, materialGround));
-
-	m_world.Add(make_shared<Sphere>(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
-
-	m_world.Add(make_shared<Sphere>(point3(0, 3, -2), 1.0, lightMaterial));
+	m_world.AddSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
 
 	if(m_hasRandomSpheres)
 		AddRandomSpheres(m_world);
 }
 
-void Application::AddRandomSpheres(HittableList& world)
+void Application::AddRandomSpheres(Scene& world)
 {
-	int count = 7;
-	double size = 0.1;
-	double distance = 4;
+	const int count = 3;
+	const double size = 0.15;
+	const double distance = 3;
 
 	for (int i = -count; i <= count; i++)
 	{
 		for (int j = -count; j <= count; j++)
 		{
-			double x = fastRandomDouble(-1, 1) * size + (double)i * size * 4.0;
-			double y = -0.4;
-			double z = fastRandomDouble(-1, 1) * size + (double)j * size * 4.0;
-			color sphereColor = vec3::fastRandom(0.0, 1.0);
-
-			int materialSelector = (int)fastRandomDouble(0.0, 2.99);
+			const double x = fastRandomDouble(-1, 1) * size + (double)i * size * 4.0;
+			const double y = -0.4;
+			const double z = fastRandomDouble(-1, 1) * size + (double)j * size * 4.0;
+			const color sphereColor = vec3::fastRandom(0.0, 1.0);
+			const int materialSelector = (int)fastRandomDouble(0.0, 2.99);
 			
 			if (materialSelector == 0)
 			{
 				auto labertian = make_shared<Lambertian>(sphereColor);
-				m_world.Add(make_shared<Sphere>(point3(x, y, z), 0.1, labertian));
+				m_world.AddSphere(Sphere(point3(x, y, z), 0.1, labertian));
 			}
 			else if (materialSelector == 1)
 			{
 				auto metal = make_shared<Metal>(sphereColor, fastRandomDouble(0.0, 1.0));
-				m_world.Add(make_shared<Sphere>(point3(x, y, z), 0.1, metal));
+				m_world.AddSphere(Sphere(point3(x, y, z), 0.1, metal));
 			}
 			else if (materialSelector == 2)
 			{
 				auto glass = make_shared<Dielectric>(sphereColor, fastRandomDouble(1.3, 2.4));
-				m_world.Add(make_shared<Sphere>(point3(x, y, z), 0.1, glass));
+				m_world.AddSphere(Sphere(point3(x, y, z), 0.1, glass));
 			}
 		}
 	}
@@ -150,7 +139,6 @@ void Application::Run()
 	const int sample = m_camera->GetSampleNumber();
 	const double sc = (double)sample;
 	m_averagedeltaTime = m_averagedeltaTime * ((sc - 1) / sc) + m_deltaTime * (1.0 / sc);
-	//std::clog << "Sample: " << sample << " / Avg time per frame: " << m_averagedeltaTime << "s    \r" << std::flush;
 }
 
 
@@ -189,10 +177,8 @@ void Application::Update()
 	dataString = std::string((char*)&m_uiData.critical, sizeof(m_uiData.critical));
 	size_t dataHashAfter = std::hash<std::string>{}(dataString);
 
-	//if (dataString.compare(dataString2))
 	if (dataHashBefore != dataHashAfter)
 	{
-		std::cout << "has changed" << std::endl;
 		m_camera->SetHasChanged(true);
 	}
 	
