@@ -158,6 +158,7 @@ copy /Y "$(SolutionDir)dependencies\SDL2_image-2.8.2\lib\x64\SDL2_image.dll" "$(
     <ClCompile Include="src\input\input.cpp" />
     <ClCompile Include="src\objects\bvh.cpp" />
     <ClCompile Include="src\objects\material.cpp" />
+    <ClCompile Include="src\objects\triangle.cpp" />
     <ClCompile Include="src\sdlwindowrenderer.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\application.cpp" />
@@ -182,6 +183,7 @@ copy /Y "$(SolutionDir)dependencies\SDL2_image-2.8.2\lib\x64\SDL2_image.dll" "$(
     <ClInclude Include="src\input\input.h" />
     <ClInclude Include="src\objects\bvh.h" />
     <ClInclude Include="src\objects\material.h" />
+    <ClInclude Include="src\objects\triangle.h" />
     <ClInclude Include="src\sdlwindowrenderer.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\application.h" />

@@ -7,6 +7,7 @@
 
 #include "objects/bvh.h"
 #include "objects/sphere.h"
+#include "objects/triangle.h"
 #include "objects/material.h"
 #include "tools/color.h"
 #include "imgui.h"
@@ -72,6 +73,39 @@ void Application::SetWorld()
 	m_world.AddSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
 
 	m_world.AddSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
+
+	// Vertex array
+	double vertices[] = {
+		0.0,  3.0,  0.0,  // Top front vertex
+		1.0,  2.0,  0.0,  // Right front vertex
+		0.0,  1.0,  0.0,  // Bottom front vertex
+	   -1.0,  2.0,  0.0,  // Left front vertex
+		0.0,  2.0,  1.0,  // Top back vertex
+		0.0,  2.0, -1.0   // Bottom back vertex
+	};
+
+	// Index array
+	unsigned int indices[] = {
+		0, 1, 4,  // Top front, Right front, Top back
+		1, 2, 4,  // Right front, Bottom front, Top back
+		2, 3, 4,  // Bottom front, Left front, Top back
+		3, 0, 4,  // Left front, Top front, Top back
+		0, 1, 5,  // Top front, Right front, Bottom back
+		1, 2, 5,  // Right front, Bottom front, Bottom back
+		2, 3, 5,  // Bottom front, Left front, Bottom back
+		3, 0, 5   // Left front, Top front, Bottom back
+	};
+
+	//std::vector<Triangle> triangles;
+
+	for (int i = 0; i < 24; i += 3) {
+		vec3 p1 = { vertices[3 * indices[i]], vertices[3 * indices[i] + 1], vertices[3 * indices[i] + 2] };
+		vec3 p2 = { vertices[3 * indices[i + 1]], vertices[3 * indices[i + 1] + 1], vertices[3 * indices[i + 1] + 2] };
+		vec3 p3 = { vertices[3 * indices[i + 2]], vertices[3 * indices[i + 2] + 1], vertices[3 * indices[i + 2] + 2] };
+
+		const std::array<vec3, 3> points = { p1, p2, p3 };
+		m_world.AddTriangle(Triangle(points, materialLeft));
+	}
 
 	if(m_hasRandomSpheres)
 		AddRandomSpheres(m_world);

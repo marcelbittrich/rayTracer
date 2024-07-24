@@ -3,6 +3,7 @@
 #include "bvh.h"
 #include "hittable.h"
 #include "sphere.h"
+#include "triangle.h"
 #include "../tools/aabb.h"
 
 #include <vector>
@@ -19,12 +20,22 @@ public:
 		ResetPointersToAllObjects();
 	}
 
+	void AddTriangle(Triangle triangleToAdd)
+	{
+		m_triangles.push_back(triangleToAdd);
+		ResetPointersToAllObjects();
+	}
+
 	void ResetPointersToAllObjects()
 	{
 		m_objects.clear();
 		for (int i = 0; i < m_spheres.size(); i++) 
 		{
 			m_objects.push_back(&m_spheres[i]);
+		}
+		for (int i = 0; i < m_triangles.size(); i++)
+		{
+			m_objects.push_back(&m_triangles[i]);
 		}
 	}
 
@@ -76,5 +87,6 @@ public:
 private:
 	bool m_hasBVH = false;
 	std::vector<Sphere> m_spheres;
+	std::vector<Triangle> m_triangles;
 	std::vector<Hittable*> m_objects;
 };
