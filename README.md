@@ -17,6 +17,12 @@ A CPU-based ray tracer in an real-time environment with a controllable camera. R
 ## Input Showcase
 https://github.com/marcelbittrich/rayTracingInOneWeekend/assets/113523293/13a79a5f-55d7-4bac-85b6-86e3037f9393
 
+## Bloom
+
+Disabled          |  Enabled
+:-------------------------:|:-------------------------:
+![Diamond5](https://github.com/user-attachments/assets/594a4622-3c48-4d39-867f-d5b3d07f21a1) |  ![Diamond6](https://github.com/user-attachments/assets/f15e65ce-2a61-493b-9aff-ba530e981ab7)
+
 ## Features
 
 ### Implemented
