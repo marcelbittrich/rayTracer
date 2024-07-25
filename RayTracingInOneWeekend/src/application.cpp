@@ -64,7 +64,6 @@ void Application::SetWorld()
 	// Refraction Index: glass 1.3 - 1.7, diamond 2.4.  
 	auto materialGlass = make_shared<Dielectric>(color(1.0, 1.0, 1.0), 1.5);
 
-	auto lightMaterial = make_shared<DiffuseLight>(color(1, 1, 1), 3.0);
 
 	m_world.AddSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
 	m_world.AddSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
@@ -73,7 +72,13 @@ void Application::SetWorld()
 
 	m_world.AddSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
 
+	auto lightMaterial = make_shared<DiffuseLight>(color(1, 1, 1), 3.0);
+	auto lightMaterialGreen = make_shared<DiffuseLight>(color(0.2, 1, 0.2), 3.0);
+	auto lightMaterialRed = make_shared<DiffuseLight>(color(1, 0.2, 0.2), 3.0);
+
 	m_world.AddSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
+	m_world.AddSphere(Sphere(point3(-2, 0.5, 1), .2, lightMaterialGreen));
+	m_world.AddSphere(Sphere(point3(4, 0.7, -1), .35, lightMaterialRed));
 
 	m_world.AddDiamond(Diamond(point3(0, 1, -1), 1.2, materialCenter));
 	m_world.AddDiamond(Diamond(point3(-1, 1, 1), 0.7, materialLeft));
