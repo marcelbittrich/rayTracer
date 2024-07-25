@@ -38,7 +38,7 @@ bool Triangle::Hit(const Ray& ray, Interval rayT, HitRecord& rec) const
         rec.t = t;
         rec.p = ray.At(rec.t);
         rec.objectCenter = (m_points[0] + m_points[1] + m_points[2]) / 3;
-        const vec3 outwardNormal = unitVector(cross(edge1, edge2));
+        const vec3 outwardNormal = unitVector(cross(edge2, edge1));
         rec.SetFaceNormal(ray, outwardNormal);
         rec.material = m_material;
         return  true;

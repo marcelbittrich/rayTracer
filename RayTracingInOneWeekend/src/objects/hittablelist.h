@@ -4,6 +4,7 @@
 #include "hittable.h"
 #include "sphere.h"
 #include "triangle.h"
+#include "diamond.h"
 #include "../tools/aabb.h"
 
 #include <vector>
@@ -26,6 +27,12 @@ public:
 		ResetPointersToAllObjects();
 	}
 
+	void AddDiamond(Diamond diamondToAdd)
+	{
+		m_diamonds.push_back(diamondToAdd);
+		ResetPointersToAllObjects();
+	}
+
 	void ResetPointersToAllObjects()
 	{
 		m_objects.clear();
@@ -36,6 +43,10 @@ public:
 		for (int i = 0; i < m_triangles.size(); i++)
 		{
 			m_objects.push_back(&m_triangles[i]);
+		}
+		for (int i = 0; i < m_diamonds.size(); i++)
+		{
+			m_objects.push_back(&m_diamonds[i]);
 		}
 	}
 
@@ -88,5 +99,6 @@ private:
 	bool m_hasBVH = false;
 	std::vector<Sphere> m_spheres;
 	std::vector<Triangle> m_triangles;
+	std::vector<Diamond> m_diamonds;
 	std::vector<Hittable*> m_objects;
 };

@@ -7,6 +7,13 @@
 class Triangle : public Hittable
 {
 public:
+	Triangle()
+	{
+		m_material = nullptr;
+		m_points = { vec3(0,0,0),vec3(0,0,0) ,vec3(0,0,0) };
+		bbox = AABB::empty;
+	};
+
 	Triangle(std::array<vec3, 3> points, shared_ptr<Material> material) : m_points(points), m_material(material)
 	{
 		const AABB bboxAB = AABB(points[0], points[1]);

@@ -182,6 +182,7 @@ copy /Y "$(SolutionDir)dependencies\SDL2_image-2.8.2\lib\x64\SDL2_image.dll" "$(
     <ClInclude Include="src\input\mover.h" />
     <ClInclude Include="src\input\input.h" />
     <ClInclude Include="src\objects\bvh.h" />
+    <ClInclude Include="src\objects\diamond.h" />
     <ClInclude Include="src\objects\material.h" />
     <ClInclude Include="src\objects\triangle.h" />
     <ClInclude Include="src\sdlwindowrenderer.h" />
