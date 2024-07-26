@@ -10,7 +10,9 @@
 #include "objects/triangle.h"
 #include "objects/diamond.h"
 #include "objects/material.h"
+#include "objects/polygonobject.h"
 #include "tools/color.h"
+
 #include "imgui.h"
 
 #include <String>
@@ -63,29 +65,39 @@ void Application::SetWorld()
 
 	// Refraction Index: glass 1.3 - 1.7, diamond 2.4.  
 	auto materialGlass = make_shared<Dielectric>(color(1.0, 1.0, 1.0), 1.5);
-
-
-	m_world.AddSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
-	m_world.AddSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
-	m_world.AddSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
-	m_world.AddSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
-
-	m_world.AddSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
+	auto materialDiamond = make_shared<Dielectric>(color(1.0, 1.0, 1.0), 2.4);
 
 	auto lightMaterial = make_shared<DiffuseLight>(color(1, 1, 1), 3.0);
 	auto lightMaterialGreen = make_shared<DiffuseLight>(color(0.2, 1, 0.2), 3.0);
 	auto lightMaterialRed = make_shared<DiffuseLight>(color(1, 0.2, 0.2), 3.0);
+	auto lightMaterialBlue = make_shared<DiffuseLight>(color(0.2, 0.2, 1.0), 3.0);
 
-	m_world.AddSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
-	m_world.AddSphere(Sphere(point3(-2, 0.5, 1), .2, lightMaterialGreen));
-	m_world.AddSphere(Sphere(point3(4, 0.7, -1), .35, lightMaterialRed));
 
-	m_world.AddDiamond(Diamond(point3(0, 1, -1), 1.2, materialCenter));
-	m_world.AddDiamond(Diamond(point3(-1, 1, 1), 0.7, materialLeft));
-	m_world.AddDiamond(Diamond(point3(1, 1, -0.5), 2, materialRight));
-	m_world.AddDiamond(Diamond(point3(2, 1, 0.5), 0.5, materialGlass));
+	Scene sphereScene;
+	sphereScene.AddSphere(Sphere(point3(0, 3, -2), 1.0, lightMaterial));
+	sphereScene.AddSphere(Sphere(point3(-2, 0.5, 1), .2, lightMaterialGreen));
+	sphereScene.AddSphere(Sphere(point3(4, 0.7, -1), .35, lightMaterialRed));
+	sphereScene.AddSphere(Sphere(point3(2, 0, -5), 1.5, materialRight));
+	sphereScene.AddSphere(Sphere(point3(0, 0, -1), 0.5, materialCenter));
+	sphereScene.AddSphere(Sphere(point3(-3, 0.5, -3), 1.0, materialLeft));
+	sphereScene.AddSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
+	sphereScene.AddSphere(Sphere(point3(-1.5, -0.1, -1.5), 0.4, materialGlass));
 
-	m_world.AddDiamond(Diamond(point3(-2.2, -0.1, -1.5), 0.5, materialGlass));
+	sphereScene.AddDiamond(Diamond(point3(0, 1, -1), 1.2, materialLeft));
+	sphereScene.AddDiamond(Diamond(point3(-1, 1, 1), 0.7, materialLeft));
+	sphereScene.AddDiamond(Diamond(point3(1, 1, -0.5), 2, materialRight));
+	sphereScene.AddDiamond(Diamond(point3(2, 1, 0.5), 0.5, materialDiamond));
+	sphereScene.AddDiamond(Diamond(point3(-2.2, -0.1, -1.5), 0.5, materialDiamond));
+
+	Scene polyObjectScene;
+	polyObjectScene.AddSphere(Sphere(point3(2, 4, 0), 1.0, lightMaterialBlue));
+	polyObjectScene.AddSphere(Sphere(point3(-1, 4, 1.732), 1.0, lightMaterialGreen));
+	polyObjectScene.AddSphere(Sphere(point3(-1, 4, -1.732), 1.0, lightMaterialRed));
+	polyObjectScene.AddSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
+	ObjectImport::ObjectBuffer buffers = ObjectImport::readOBJ("D:/Dokumente/GameDev/RayTracingInOneWeekend/objects/diamond.obj");
+	polyObjectScene.AddPolygonObject(PolygonObject(buffers, point3(0, 0.5, 0 ), materialDiamond));
+
+	m_world = polyObjectScene;
 
 	if(m_hasRandomSpheres)
 		AddRandomSpheres(m_world);

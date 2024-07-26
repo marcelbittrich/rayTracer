@@ -12,6 +12,12 @@
 
 #include "ui/uidata.h"
 
+struct DebugInfo 
+{
+	int nodeHitChecks = 0;
+	int primitiveHitChecks = 0;
+};
+
 class Camera
 {
 public:
@@ -30,6 +36,8 @@ public:
 
 private:
 	bool   m_hasFocusBlur  = true;
+	const bool   m_showDebugColor      = false;
+	const bool   m_showDebugColorRatio = false;
 	int    m_maxBounce     = 10;
 	double m_hfov          = 60.0;
 	double m_focusDistance = 5.0;
@@ -70,5 +78,7 @@ private:
 	Ray GetRay(int i, int j);
 	vec3 PixelSampleSquare();
 	vec3 DefocusDiskSample();
-	color RayColor(const Ray& ray, int maxBounce, const Scene& world);
+	color RayColor(const Ray& ray, int maxBounce, const Scene& world, DebugInfo& debugInfo);
+
+	color DebugColor(int nodeHits, int primitiveHits);
 };

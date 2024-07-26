@@ -15,6 +15,9 @@ struct HitRecord
 	double t;
 	bool frontFace;
 
+	int nodeHitChecks = 0;
+	int primitiveHitChecks = 0;
+
 	void SetFaceNormal(const Ray& ray, const vec3& outwardNormal)
 	{
 		// Sets hit record normal vector.

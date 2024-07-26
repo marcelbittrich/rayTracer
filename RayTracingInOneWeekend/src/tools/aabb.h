@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include "interval.h"
 #include "ray.h"
 #include "vec3.h"
@@ -78,3 +79,10 @@ public:
 	static const AABB empty, universe;
 };
 
+inline std::ostream& operator<<(std::ostream& out, const AABB& bbox) {
+	out << std::endl;
+	out << "x: " << bbox.x.min << " " << bbox.x.max << std::endl;
+	out << "y: " << bbox.y.min << " " << bbox.y.max << std::endl;
+	out << "z: " << bbox.z.min << " " << bbox.z.max << std::endl;
+	return out;
+}

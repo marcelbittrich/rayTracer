@@ -2,6 +2,8 @@
 
 bool Triangle::Hit(const Ray& ray, Interval rayT, HitRecord& rec) const
 {
+    rec.primitiveHitChecks++;
+
     constexpr double epsilon = std::numeric_limits<double>::epsilon();
 
     const vec3 edge1 = m_points.at(1) - m_points.at(0);
@@ -38,7 +40,7 @@ bool Triangle::Hit(const Ray& ray, Interval rayT, HitRecord& rec) const
         rec.t = t;
         rec.p = ray.At(rec.t);
         rec.objectCenter = (m_points[0] + m_points[1] + m_points[2]) / 3;
-        const vec3 outwardNormal = unitVector(cross(edge2, edge1));
+        const vec3 outwardNormal = unitVector(cross(edge1, edge2));
         rec.SetFaceNormal(ray, outwardNormal);
         rec.material = m_material;
         return  true;

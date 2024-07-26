@@ -19,33 +19,44 @@ public:
 		const vec3 back		= center + vec3(0, 0, height / 2);
 
 		// Vertex array
-		const std::array<double, 18> vertices = {
-			 left.x(),		left.y(),	left.z(),	// Left vertex
-			 right.x(),		right.y(),  right.z(),  // Right vertex
-			 up.x(),		up.y(),		up.z(),		// Top vertex
-			 down.x(),		down.y(),	down.z(),	// Bottom vertex
-			 front.x(),		front.y(),  front.z(),  // Front vertex
-			 back.x(),		back.y(),	back.z(),   // Back vertex
+		const std::array<vec3, 6> vertices = {
+			 left,
+			 right,
+			 up, 
+			 down,
+			 front,
+			 back,
 		};
 
 		// Index array
 		const std::array<unsigned int, 24> indices = {
-			0, 4, 2,  // Left, Front, Top
-			1, 2, 4,  // Right, Top, Front
-			1, 4, 3,  // Right, Front, Bottom
-			0, 3, 4,  // Left, Bottom, Front
-			0, 2, 5,  // Left, Top, Back
-			1, 5, 2,  // Right, Back, Top
-			1, 3, 5,  // Right, Bottom, Back
-			0, 5, 3   // Left, Back, Bottom
+			2, 4, 0,  // Top, Front, Left
+			4, 2, 1,  // Font, Top, Right
+			3, 4, 1,  // Bottom, Front, Right
+			4, 3, 0,  // Front, Bottom, Left
+			5, 2, 0,  // Back, Top, Left
+			2, 5, 1,  // Top, Back, Right
+			5, 3, 1,  // Back, Bottom, Right
+			3, 5, 0   // Bottom, Back, Left
 		};
 
 		for (int i = 0, j = 0; i < indices.size(); i += 3, j++) {
-			vec3 p1 = { vertices[3 * indices[i]], vertices[3 * indices[i] + 1], vertices[3 * indices[i] + 2] };
-			vec3 p2 = { vertices[3 * indices[i + 1]], vertices[3 * indices[i + 1] + 1], vertices[3 * indices[i + 1] + 2] };
-			vec3 p3 = { vertices[3 * indices[i + 2]], vertices[3 * indices[i + 2] + 1], vertices[3 * indices[i + 2] + 2] };
+			vec3 p1 = { 
+				vertices[indices[i]].x(), 
+				vertices[indices[i]].y(), 
+				vertices[indices[i]].z()
+			};
+			vec3 p2 = { 
+				vertices[indices[i + 1]].x(), 
+				vertices[indices[i + 1]].y(), 
+				vertices[indices[i + 1]].z()
+			};
+			vec3 p3 = { 
+				vertices[indices[i + 2]].x(),
+				vertices[indices[i + 2]].y(),
+				vertices[indices[i + 2]].z()
+			};
 
-			const std::array<vec3, 3> points = { p1, p2, p3 };
 			m_triangles.at(j) = Triangle({ p1,p2,p3 }, m_material);
 		}
 
@@ -58,7 +69,16 @@ public:
 
 	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
 	{
+		rec.nodeHitChecks++;
+		if (!bbox.Hit(ray, rayT))
+		{
+			return false;
+		}
+
+		rec.primitiveHitChecks++;
 		HitRecord tempRec;
+		tempRec.primitiveHitChecks = rec.primitiveHitChecks;
+		tempRec.nodeHitChecks = rec.nodeHitChecks;
 		bool hitAnything = false;
 		double closestSoFar = rayT.max;
 
@@ -71,6 +91,9 @@ public:
 				rec = tempRec;
 			}
 		}
+
+		rec.primitiveHitChecks = tempRec.primitiveHitChecks;
+		rec.nodeHitChecks = tempRec.nodeHitChecks;
 
 		if (hitAnything) {
 			rec.objectCenter = m_center;

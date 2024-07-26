@@ -154,6 +154,7 @@ copy /Y "$(SolutionDir)dependencies\SDL2_image-2.8.2\lib\x64\SDL2_image.dll" "$(
     <ClCompile Include="imGUI\imgui_impl_sdlrenderer2.cpp" />
     <ClCompile Include="imGUI\imgui_tables.cpp" />
     <ClCompile Include="imGUI\imgui_widgets.cpp" />
+    <ClCompile Include="src\import\import.cpp" />
     <ClCompile Include="src\input\mover.cpp" />
     <ClCompile Include="src\input\input.cpp" />
     <ClCompile Include="src\objects\bvh.cpp" />
@@ -179,11 +180,13 @@ copy /Y "$(SolutionDir)dependencies\SDL2_image-2.8.2\lib\x64\SDL2_image.dll" "$(
     <ClInclude Include="imGUI\imstb_rectpack.h" />
     <ClInclude Include="imGUI\imstb_textedit.h" />
     <ClInclude Include="imGUI\imstb_truetype.h" />
+    <ClInclude Include="src\import\import.h" />
     <ClInclude Include="src\input\mover.h" />
     <ClInclude Include="src\input\input.h" />
     <ClInclude Include="src\objects\bvh.h" />
     <ClInclude Include="src\objects\diamond.h" />
     <ClInclude Include="src\objects\material.h" />
+    <ClInclude Include="src\objects\polygonobject.h" />
     <ClInclude Include="src\objects\triangle.h" />
     <ClInclude Include="src\sdlwindowrenderer.h" />
     <ClInclude Include="src\camera.h" />

@@ -76,7 +76,7 @@ void UI::Update(UIData& data, Scene& world)
 					int bounces = uiData.critical.rayBounces;
 					if (ImGui::InputInt("Ray Bounces", &bounces))
 					{
-						if (bounces <= 10 && bounces >= 1)
+						if (bounces <= 50 && bounces >= 1)
 							uiData.critical.rayBounces = bounces;
 					}
 				}

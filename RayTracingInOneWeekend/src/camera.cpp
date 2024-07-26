@@ -170,7 +170,14 @@ void Camera::SetPixelColor(int x, int y)
 {
 	color pixelColor = { 0,0,0 };
 	Ray ray = GetRay(x, y);
-	color newColor = RayColor(ray, m_maxBounce, *m_currentWorld);
+	DebugInfo debugInfo;
+	color newColor = RayColor(ray, m_maxBounce, *m_currentWorld, debugInfo);
+
+	if (m_showDebugColorRatio)
+	{
+		const double ratio = 1.0 / ((double)debugInfo.nodeHitChecks / (debugInfo.primitiveHitChecks + 1));
+		newColor = 0.5 * (color(0, 0.5, 0) * (1 - ratio) + color(0.5, 0, 0) * ratio);
+	}
 
 	if (m_sampleCount > 1)
 	{
@@ -220,7 +227,7 @@ vec3 Camera::DefocusDiskSample()
 	return m_position + p[0] * m_defocusDistanceU + p[1] * m_defocusDistanceV;
 }
 
-color Camera::RayColor(const Ray& ray, int bounce, const Scene& world)
+color Camera::RayColor(const Ray& ray, int bounce, const Scene& world, DebugInfo& debugInfo)
 {
 	if (bounce <= 0)
 	{
@@ -228,8 +235,17 @@ color Camera::RayColor(const Ray& ray, int bounce, const Scene& world)
 	}
 
 	HitRecord rec;
-	if (!world.Hit(ray, Interval(0.001, infinity), rec))
+	const bool hitWorld = world.Hit(ray, Interval(0.001, infinity), rec);
+	debugInfo.nodeHitChecks += rec.nodeHitChecks;
+	debugInfo.primitiveHitChecks += rec.primitiveHitChecks;
+
+	if (!hitWorld)
 	{
+		if (m_showDebugColor) 
+		{
+			return DebugColor(rec.nodeHitChecks, rec.primitiveHitChecks);
+		}
+
 		// Color background with gradient if not hit.
 		vec3 unitdirection = unitVector(ray.Direction());
 		double a = 0.5 * (unitdirection.y() + 1.0);
@@ -245,11 +261,28 @@ color Camera::RayColor(const Ray& ray, int bounce, const Scene& world)
 
 	if (!rec.material->Scatter(ray, rec, attenuation, scatterd))
 	{
+		if (m_showDebugColor)
+		{
+			return DebugColor(rec.nodeHitChecks, rec.primitiveHitChecks);
+		}
+
 		return colorFromEmission;
 	}
 
-	color colorFromScatter = attenuation * RayColor(scatterd, bounce - 1, world);
+	color colorFromScatter = attenuation * RayColor(scatterd, bounce - 1, world, debugInfo);
+
+	if (m_showDebugColor)
+	{
+		return DebugColor(rec.nodeHitChecks, rec.primitiveHitChecks);
+	}
 
 	return colorFromEmission + colorFromScatter;
+}
+
+color Camera::DebugColor(int nodeHits, int primitiveHits)
+{
+	const double intesityNodeHits = 1.0 - 1.0 / (nodeHits + 1);
+	const double intesityPrimitiveHits = 1.0 - 1.0 / (primitiveHits + 1);
+	return color(0.5, 0, 0) * intesityPrimitiveHits + color(0, 0.5, 0) * intesityNodeHits;
 }
 
