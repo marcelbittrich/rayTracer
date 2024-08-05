@@ -1,3 +1,5 @@
+![Background03_Bloom_Small](https://github.com/user-attachments/assets/17bd8065-a0c5-4c12-a608-afe831c11a4e)
+
 # Ray Tracer
 A CPU-based ray tracer in an real-time environment with a controllable camera. Relies on C++ 17 parallel programming features and SDL2 for window creation and input control.
 (work in progress)
