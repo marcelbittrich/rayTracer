@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "bvh.h"
 #include "hittable.h"
 #include "triangle.h"
 #include "../tools/vec3.h"
@@ -51,22 +52,22 @@ public:
 
 		std::cout << "PolygonGeometry tris count: " << m_triangles.size() << std::endl;
 		std::cout << "With an AABB: " << bbox << std::endl;
-		
 	}
 
 	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
 	{
 		rec.nodeHitChecks++;
+
 		if (!bbox.Hit(ray, rayT))
 		{
 			return false;
 		}
 
-		rec.primitiveHitChecks++;
+		bool hitAnything = false;
+
 		HitRecord tempRec;
 		tempRec.primitiveHitChecks = rec.primitiveHitChecks;
 		tempRec.nodeHitChecks = rec.nodeHitChecks;
-		bool hitAnything = false;
 		double closestSoFar = rayT.max;
 
 		for (const Triangle& tri : m_triangles)
@@ -95,7 +96,7 @@ public:
 
 	point3 m_center;
 	shared_ptr<Material> m_material;
-
+	BVH_Node* m_rootNode = nullptr;
 private:
 	std::vector<Triangle> m_triangles;
 	AABB bbox;

@@ -36,8 +36,9 @@ public:
 
 private:
 	bool   m_hasFocusBlur  = true;
-	const bool   m_showDebugColor      = false;
-	const bool   m_showDebugColorRatio = false;
+	const bool   m_showDebugNodesVisited = false;
+	const bool   m_showDebugTriesTested = false;
+	bool   m_inDebugMode = m_showDebugNodesVisited || m_showDebugTriesTested;
 	int    m_maxBounce     = 10;
 	double m_hfov          = 60.0;
 	double m_focusDistance = 5.0;

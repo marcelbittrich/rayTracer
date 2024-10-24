@@ -91,11 +91,12 @@ void Application::SetWorld()
 
 	Scene polyObjectScene;
 	polyObjectScene.AddSphere(Sphere(point3(2, 4, 0), 1.0, lightMaterialBlue));
-	polyObjectScene.AddSphere(Sphere(point3(-1, 4, 1.732), 1.0, lightMaterialGreen));
+	polyObjectScene.AddSphere(Sphere(point3(-1, 4, 1.732), 1.0, lightMaterial));
 	polyObjectScene.AddSphere(Sphere(point3(-1, 4, -1.732), 1.0, lightMaterialRed));
 	polyObjectScene.AddSphere(Sphere(point3(0, -1000.5, -1), 1000, materialGround));
 	ObjectImport::ObjectBuffer buffers = ObjectImport::readOBJ("D:/Dokumente/GameDev/RayTracingInOneWeekend/objects/diamond.obj");
-	polyObjectScene.AddPolygonObject(PolygonObject(buffers, point3(0, 0.5, 0 ), materialDiamond));
+	polyObjectScene.AddPolygonObject(PolygonObject(buffers, point3(-2.7, 0.5, -2.7), materialDiamond));
+	polyObjectScene.AddDiamond(Diamond(point3(2.1, 1.2, 2.1), 1.5, materialCenter));
 
 	m_world = polyObjectScene;
 

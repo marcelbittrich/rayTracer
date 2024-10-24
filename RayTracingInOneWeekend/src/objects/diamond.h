@@ -70,12 +70,12 @@ public:
 	bool Hit(const Ray& ray, Interval rayT, HitRecord& rec) const override
 	{
 		rec.nodeHitChecks++;
+
 		if (!bbox.Hit(ray, rayT))
 		{
 			return false;
 		}
 
-		rec.primitiveHitChecks++;
 		HitRecord tempRec;
 		tempRec.primitiveHitChecks = rec.primitiveHitChecks;
 		tempRec.nodeHitChecks = rec.nodeHitChecks;

@@ -4,6 +4,7 @@
 #include <execution>
 
 #include "SDL_mouse.h"
+#include "SDL_stdinc.h"
 
 #include "objects/material.h"
 
@@ -78,6 +79,7 @@ void Camera::Update(const Scene& world, color* imageBuffer, const WindowInfo& wi
 	m_currentWorld = &world;
 	m_currentWindowInfo = &windowInfo;
 	m_ImageBuffer = imageBuffer;
+	m_inDebugMode = m_showDebugNodesVisited || m_showDebugTriesTested;
 
 	if (m_hasFocusBlur && m_setFocusToMouse)
 	{
@@ -173,10 +175,23 @@ void Camera::SetPixelColor(int x, int y)
 	DebugInfo debugInfo;
 	color newColor = RayColor(ray, m_maxBounce, *m_currentWorld, debugInfo);
 
-	if (m_showDebugColorRatio)
+	if (m_showDebugNodesVisited)
 	{
-		const double ratio = 1.0 / ((double)debugInfo.nodeHitChecks / (debugInfo.primitiveHitChecks + 1));
-		newColor = 0.5 * (color(0, 0.5, 0) * (1 - ratio) + color(0.5, 0, 0) * ratio);
+		const int maxVisits = 200;
+		color zeroVisitsColor = { 0,0,0.4 };
+		color maxVisitsColor = { 0.4,0.4,0 };
+
+		const double ratio = SDL_clamp((double)debugInfo.nodeHitChecks/maxVisits,0.0,1.0);
+		newColor = zeroVisitsColor * (1 - ratio) + maxVisitsColor * ratio;
+	}
+	else if (m_showDebugTriesTested)
+	{
+		const int maxTested = 100;
+		color zeroTestedColor = { 0,0,0.4 };
+		color maxTestedColor = { 0.4,0.4,0 };
+
+		const double ratio = SDL_clamp((double)debugInfo.primitiveHitChecks / maxTested, 0.0, 1.0);
+		newColor = zeroTestedColor * (1 - ratio) + maxTestedColor * ratio;
 	}
 
 	if (m_sampleCount > 1)
@@ -199,7 +214,7 @@ Ray Camera::GetRay(int i, int j)
 	point3 pixelSample = pixelCenter + PixelSampleSquare();
 
 	point3 rayOrigin;
-	if (m_hasFocusBlur)
+	if (m_hasFocusBlur && !m_inDebugMode)
 	{
 		rayOrigin = (m_defocusAngle <= 0) ? m_position : DefocusDiskSample();
 	}
@@ -241,11 +256,6 @@ color Camera::RayColor(const Ray& ray, int bounce, const Scene& world, DebugInfo
 
 	if (!hitWorld)
 	{
-		if (m_showDebugColor) 
-		{
-			return DebugColor(rec.nodeHitChecks, rec.primitiveHitChecks);
-		}
-
 		// Color background with gradient if not hit.
 		vec3 unitdirection = unitVector(ray.Direction());
 		double a = 0.5 * (unitdirection.y() + 1.0);
@@ -261,20 +271,10 @@ color Camera::RayColor(const Ray& ray, int bounce, const Scene& world, DebugInfo
 
 	if (!rec.material->Scatter(ray, rec, attenuation, scatterd))
 	{
-		if (m_showDebugColor)
-		{
-			return DebugColor(rec.nodeHitChecks, rec.primitiveHitChecks);
-		}
-
 		return colorFromEmission;
 	}
 
 	color colorFromScatter = attenuation * RayColor(scatterd, bounce - 1, world, debugInfo);
-
-	if (m_showDebugColor)
-	{
-		return DebugColor(rec.nodeHitChecks, rec.primitiveHitChecks);
-	}
 
 	return colorFromEmission + colorFromScatter;
 }
